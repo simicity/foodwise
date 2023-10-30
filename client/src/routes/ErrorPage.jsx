@@ -13,7 +13,7 @@ const ErrorPage = () => {
         textAlign: 'center',
       }}>
         <Typography variant="h4" component="h1">Oops!</Typography>
-        <Typography variant="subtitle1" component="p" mt={2}>The requested URL was not found.</Typography>
+        <Typography variant="subtitle1" component="p" mt={2}>Something went wrong...</Typography>
       </Box>
     </>
   )
