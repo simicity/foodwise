@@ -59,9 +59,9 @@ const createFridgesUsersTable = async () => {
   }
 }
 
-const createCategoriesTable = async () => {
+const createFoodCategoriesTable = async () => {
   const createCategoriesTableQuery = `
-      CREATE TABLE IF NOT EXISTS categories (
+      CREATE TABLE IF NOT EXISTS food_categories (
           id serial PRIMARY KEY,
           name varchar(30) NOT NULL
       );
@@ -69,18 +69,18 @@ const createCategoriesTable = async () => {
 
   try {
     const res = await pool.query(createCategoriesTableQuery)
-    console.log('🎉 categories table created successfully')
+    console.log('🎉 food_categories table created successfully')
   } catch (err) {
-    console.error('⚠️ error creating categories table', err)
+    console.error('⚠️ error creating food_categories table', err)
   }
 }
 
-const seedCategoriesTable = async () => {
-  await createCategoriesTable()
+const seedFoodCategoriesTable = async () => {
+  await createFoodCategoriesTable()
 
   categories.forEach((category) => {
     const insertQuery = {
-      text: 'INSERT INTO categories (name) VALUES ($1)'
+      text: 'INSERT INTO food_categories (name) VALUES ($1)'
     }
   
     pool.query(insertQuery, [category], (err, res) => {
@@ -106,7 +106,7 @@ const createFoodsTable = async () => {
       fridge_id int NOT NULL,
       category_id int NOT NULL,
       FOREIGN KEY (fridge_id) REFERENCES fridges(id) ON UPDATE CASCADE,
-      FOREIGN KEY (category_id) REFERENCES categories(id) ON UPDATE CASCADE
+      FOREIGN KEY (category_id) REFERENCES food_categories(id) ON UPDATE CASCADE
     );
   `
 
@@ -128,7 +128,7 @@ const createShoppingItemsTable = async () => {
       category_id int NOT NULL,
       fridge_id int NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE,
-      FOREIGN KEY (category_id) REFERENCES categories(id) ON UPDATE CASCADE,
+      FOREIGN KEY (category_id) REFERENCES food_categories(id) ON UPDATE CASCADE,
       FOREIGN KEY (fridge_id) REFERENCES fridges(id) ON UPDATE CASCADE
     );
   `
@@ -145,7 +145,7 @@ const createTables = async () => {
   await createUsersTable()
   await createFridgesTable()
   await createFridgesUsersTable()
-  await seedCategoriesTable()
+  await seedFoodCategoriesTable()
   await createFoodsTable()
   await createShoppingItemsTable()
 }
