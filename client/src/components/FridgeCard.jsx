@@ -6,8 +6,8 @@ const FridgeCard = ({ fridge }) => {
 
   return (
     <>
-      <Card sx={{ height: "150px", p: 2 }}>
-        <CardActionArea href={`/fridge/${fridge.id}`}>
+      <Card sx={{ height: "150px" }}>
+        <CardActionArea onClick={() => {location.href=`/fridge/${fridge.id}`}} sx={{ display: 'flex', alignItems: 'start', justifyContent: 'start', width: '100%', height: '100%', p: 2 }}>
           <Typography variant="h6" component="div" fontWeight={'bold'}>
             {fridge.name}
           </Typography>
