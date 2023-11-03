@@ -42,31 +42,11 @@ const updateFridge = async (req, res) => {
 }
 
 const deleteFridge = async (req, res) => {
-  let fridge = null
-  const id = parseInt(req.params.id)
-
   try {
-    fridge = await pool.query('SELECT * FROM fridges WHERE id = $1', [id])
-  } catch (error) {
-    res.status(404).json( { error: error.message } )
-    return
-  }
-
-  if (fridge.rowCount === 0) {
-    res.status(404).json( { error: `Fridge with id ${id} not found` } )
-    return
-  }
-
-  const { user_id } = req.body
-  if (fridge.rows[0].user_id !== user_id) {
-    res.status(403).json( { error: `Not authorized to delete fridge with id ${id}` } )
-    return
-  }
-
-  try {
+    const id = parseInt(req.params.id)
     const results = await pool.query('DELETE FROM fridges WHERE id = $1', [id])
     res.status(200).json(results.rows)
-  } catch (error){
+  } catch (error) {
     res.status(409).json( { error: error.message } )
   }
 }
