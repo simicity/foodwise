@@ -5,6 +5,7 @@ import foodCategoriesRoutes from './routes/food_categories.js'
 import fridgesRoutes from './routes/fridges.js'
 import foodsRoutes from './routes/foods.js'
 import usersRoutes from './routes/users.js'
+import fridgesUsersRoutes from './routes/fridges_users.js'
 
 const app = express()
 
@@ -19,6 +20,7 @@ app.use('/api/food-categories', foodCategoriesRoutes)
 app.use('/api/fridges', fridgesRoutes)
 app.use('/api/foods', foodsRoutes)
 app.use('/api/users', usersRoutes)
+app.use('/api/fridges-users', fridgesUsersRoutes)
 
 const PORT = process.env.PORT || 3001
 
