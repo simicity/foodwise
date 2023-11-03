@@ -1,9 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 
-import foodCategoriesRoutes from './routes/food_categories.js'
-import fridgesRoutes from './routes/fridges.js'
-import foodsRoutes from './routes/foods.js'
+import apiRouter from './routes/index.js'
 
 const app = express()
 
@@ -14,9 +12,7 @@ app.get('/', (req, res) => {
   res.status(200).send('<h1 style="text-align: center; margin-top: 50px;">Foodwise API</h1>')
 })
 
-app.use('/api/food-categories', foodCategoriesRoutes)
-app.use('/api/fridges', fridgesRoutes)
-app.use('/api/foods', foodsRoutes)
+app.use('/api', apiRouter)
 
 const PORT = process.env.PORT || 3001
 
