@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 
 import foodCategoriesRoutes from './routes/food_categories.js'
+import fridgesRoutes from './routes/fridges.js'
 
 const app = express()
 
@@ -13,6 +14,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/food-categories', foodCategoriesRoutes)
+app.use('/api/fridges', fridgesRoutes)
 
 const PORT = process.env.PORT || 3001
 
