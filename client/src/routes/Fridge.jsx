@@ -16,6 +16,8 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import TextField from '@mui/material/TextField'
+import FridgeFoodItemForm from "../components/FridgeFoodItemForm"
+import ShoppingListFoodItemForm from "../components/ShoppingListFoodItemForm"
 
 const Fridge = () => {
   const fridge_id = useParams().id
@@ -25,7 +27,9 @@ const Fridge = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [fridge, setFridge] = useState({id: fridge_id, name: "Fridge 1"}) // TODO: dummy data for UI testing; get fridge data from API
   const [fridgeNameEdit, setFridgeNameEdit] = useState(fridge.name)
-  const [listType, setListType] = useState('fridgeList');
+  const [listType, setListType] = useState('fridgeList')
+  const [openFridgeFoodItemForm, setOpenFridgeFoodItemForm] = useState(false)
+  const [openShoppingListFoodItemForm, setOpenShoppingListFoodItemForm] = useState(false)
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -94,8 +98,6 @@ const Fridge = () => {
           }}
         >
           <MenuItem onClick={handleOpenEdit}>Edit Fridge name</MenuItem>
-          
-
           <MenuItem onClick={handleOpenDelete}>Delete Fridge</MenuItem>
         </Menu>
 
@@ -130,10 +132,17 @@ const Fridge = () => {
           <ToggleButton value="fridgeList" sx={{ px: 2 }}>Fridge List</ToggleButton>
           <ToggleButton value="shoppingList" sx={{ px: 2 }}>Shopping List</ToggleButton>
         </ToggleButtonGroup>
-        <Button variant="contained" sx={{ position: 'absolute', right: 0, ml: 2 }}>Add Food</Button>
+        <Button variant="contained" onClick={() => listType == "fridgeList" ? setOpenFridgeFoodItemForm(true) : setOpenShoppingListFoodItemForm(true)} sx={{ position: 'absolute', right: 0, ml: 2 }}>Add Food</Button>
       </Box>
+
       {/* Fridge and Shopping List */}
       {listType == "fridgeList" ? <FridgeList /> : <ShoppingList />}
+
+      {/* Add Fridge Food Item Form */}
+      {openFridgeFoodItemForm && <FridgeFoodItemForm mode="add" open={openFridgeFoodItemForm} setOpen={setOpenFridgeFoodItemForm} />}
+
+      {/* Add Shopping List Food Item Form */}
+      {openShoppingListFoodItemForm && <ShoppingListFoodItemForm mode="add" open={openShoppingListFoodItemForm} setOpen={setOpenShoppingListFoodItemForm} />}
     </>
   )
 }
