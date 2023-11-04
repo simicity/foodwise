@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { setCloseShoppingListFoodItemForm } from '../slices/openShoppingListFoodItemForm'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
@@ -11,9 +13,12 @@ import Stack from '@mui/material/Stack'
 import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
 
-const ShoppingListFoodItemForm = ({ mode, open, setOpen }) => {
+const ShoppingListFoodItemForm = () => {
   const [item, setItem] = useState({name: "", category: "", addedDate: "", expirationDate: "", count: 0})
   const [categories, setCategories] = useState(["Fruit", "Vegetable", "Meat", "Dairy", "Grain", "Other"])
+  const isOpenShoppingListFoodItemForm = useSelector(state => state.openShoppingListFoodItemForm.flag)
+  const mode = useSelector(state => state.openShoppingListFoodItemForm.editMode)
+  const dispatch = useDispatch()
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -21,13 +26,13 @@ const ShoppingListFoodItemForm = ({ mode, open, setOpen }) => {
   }
 
   const handleSubmit = () => {
-    setOpen(false)
+    dispatch(setCloseShoppingListFoodItemForm())
   }
 
   return (
     <>
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>{mode == "add" ? "Add" : "Edit"} a food item</DialogTitle>
+      <Dialog open={isOpenShoppingListFoodItemForm} onClose={() => dispatch(setCloseShoppingListFoodItemForm())}>
+        <DialogTitle>{mode == "add" ? "Add" : "Edit"} a food item to Shopping List</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <TextField autoFocus margin="dense" label="Name" variant="outlined" sx={{ width: "300px" }} name="name" value={item.name} onChange={handleChange} />
@@ -50,7 +55,7 @@ const ShoppingListFoodItemForm = ({ mode, open, setOpen }) => {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ m: 2 }}>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={() => dispatch(setCloseShoppingListFoodItemForm())}>Cancel</Button>
           <Button variant='contained' onClick={handleSubmit}>{mode == "add" ? "Add" : "Update"}</Button>
         </DialogActions>
       </Dialog>

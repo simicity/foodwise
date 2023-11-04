@@ -4,6 +4,9 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { configureStore } from '@reduxjs/toolkit'
+import rootReducer from './slices/root.js'
 import Root from './routes/Root.jsx'
 import ErrorPage from './routes/ErrorPage.jsx'
 import Dashboard from './routes/Dashboard.jsx'
@@ -27,8 +30,12 @@ const router = createBrowserRouter([
   },
 ]);
 
+const store = configureStore({ reducer: rootReducer })
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>,
 )
