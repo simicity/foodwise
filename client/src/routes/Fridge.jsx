@@ -2,6 +2,10 @@ import { useState } from "react"
 import { Typography } from "@mui/material"
 import Box from "@mui/material/Box"
 import { useParams } from "react-router-dom"
+import { useSelector, useDispatch } from 'react-redux'
+import { setOpenFridgeFoodItemForm, setFridgeFoodItemFormEditMode } from '../slices/openFridgeFoodItemForm'
+import { setOpenShoppingListFoodItemForm, setShoppingListItemFormEditMode } from '../slices/openShoppingListFoodItemForm'
+import { setFridgeList, setShoppingList } from '../slices/listType'
 import FridgeList from "../components/FridgeList"
 import Button from "@mui/material/Button"
 import ToggleButton from '@mui/material/ToggleButton'
@@ -21,60 +25,65 @@ import ShoppingListFoodItemForm from "../components/ShoppingListFoodItemForm"
 
 const Fridge = () => {
   const fridge_id = useParams().id
-  const [anchorEl, setAnchorEl] = useState(null);
-  const openMenu = Boolean(anchorEl);
-  const [openEdit, setOpenEdit] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [fridge, setFridge] = useState({id: fridge_id, name: "Fridge 1"}) // TODO: dummy data for UI testing; get fridge data from API
+  const [anchorEl, setAnchorEl] = useState(null)
+  const openMenu = Boolean(anchorEl)
+  const [openEdit, setOpenEdit] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false)
+  const [fridge, setFridge] = useState({id: fridge_id, name: "Fridge 1"}) // TODO: dummy data for UI testing get fridge data from API
   const [fridgeNameEdit, setFridgeNameEdit] = useState(fridge.name)
-  const [listType, setListType] = useState('fridgeList')
-  const [openFridgeFoodItemForm, setOpenFridgeFoodItemForm] = useState(false)
-  const [openShoppingListFoodItemForm, setOpenShoppingListFoodItemForm] = useState(false)
+  const listType = useSelector(state => state.listType.listType)
+  const isOpenFridgeFoodItemForm = useSelector(state => state.openFridgeFoodItemForm.flag)
+  const isOpenShoppingListFoodItemForm = useSelector(state => state.openShoppingListFoodItemForm.flag)
+  const dispatch = useDispatch()
 
   const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const handleOpenEdit = () => {
-    setOpenEdit(true);
-  };
+    setOpenEdit(true)
+  }
 
   const handleCloseEdit = () => {
-    setOpenEdit(false);
-    handleMenuClose();
-  };
+    setOpenEdit(false)
+    handleMenuClose()
+  }
 
   const handleSubmitEdit = () => {
-    setOpenEdit(false);
-    handleMenuClose();
+    setOpenEdit(false)
+    handleMenuClose()
   }
 
   const handleOpenDelete = () => {
-    setOpenDelete(true);
-  };
+    setOpenDelete(true)
+  }
 
   const handleCloseDelete = () => {
-    setOpenDelete(false);
-    handleMenuClose();
-  };
+    setOpenDelete(false)
+    handleMenuClose()
+  }
 
   const handleSubmitDelete = () => {
-    setOpenDelete(false);
-    handleMenuClose();
+    setOpenDelete(false)
+    handleMenuClose()
   }
 
   const handleFridgeNameChange = (event) => {
-    const { value } = event.target;
-    setFridgeNameEdit(value);
+    const { value } = event.target
+    setFridgeNameEdit(value)
   }
 
   const handleListTypeChange = (event, newListType) => {
-    setListType(newListType);
-  };
+    if(newListType == "fridgeList") {
+      dispatch(setFridgeList())
+    } else {
+      dispatch(setShoppingList())
+    }
+  }
 
   return (
     <>
@@ -132,17 +141,17 @@ const Fridge = () => {
           <ToggleButton value="fridgeList" sx={{ px: 2 }}>Fridge List</ToggleButton>
           <ToggleButton value="shoppingList" sx={{ px: 2 }}>Shopping List</ToggleButton>
         </ToggleButtonGroup>
-        <Button variant="contained" onClick={() => listType == "fridgeList" ? setOpenFridgeFoodItemForm(true) : setOpenShoppingListFoodItemForm(true)} sx={{ position: 'absolute', right: 0, ml: 2 }}>Add Food</Button>
+        <Button variant="contained" onClick={() => { listType == "fridgeList" ? dispatch(setOpenFridgeFoodItemForm()) && dispatch(setFridgeFoodItemFormEditMode("add")) : dispatch(setOpenShoppingListFoodItemForm()) && dispatch(setShoppingListItemFormEditMode("add"))}} sx={{ position: 'absolute', right: 0, ml: 2 }}>Add Food</Button>
       </Box>
 
       {/* Fridge and Shopping List */}
       {listType == "fridgeList" ? <FridgeList /> : <ShoppingList />}
 
       {/* Add Fridge Food Item Form */}
-      {openFridgeFoodItemForm && <FridgeFoodItemForm mode="add" open={openFridgeFoodItemForm} setOpen={setOpenFridgeFoodItemForm} />}
+      {isOpenFridgeFoodItemForm && <FridgeFoodItemForm />}
 
       {/* Add Shopping List Food Item Form */}
-      {openShoppingListFoodItemForm && <ShoppingListFoodItemForm mode="add" open={openShoppingListFoodItemForm} setOpen={setOpenShoppingListFoodItemForm} />}
+      {isOpenShoppingListFoodItemForm && <ShoppingListFoodItemForm />}
     </>
   )
 }
