@@ -5,9 +5,11 @@ const categories = ['Meat', 'Vegetables', 'Fruits', 'Dairy', 'Condiments', 'Beve
 
 const createUsersTable = async () => {
   const createUsersTableQuery = `
+      DROP TABLE IF EXISTS users CASCADE;
+  
       CREATE TABLE IF NOT EXISTS users (
           id serial PRIMARY KEY,
-          google_id int NOT NULL,
+          google_id varchar(30) NOT NULL,
           username varchar(100) NOT NULL,
           avatarurl varchar(500) NOT NULL,
           accesstoken varchar(500) NOT NULL
@@ -142,12 +144,12 @@ const createShoppingItemsTable = async () => {
 }
 
 const createTables = async () => {
-  await createUsersTable()
-  await createFridgesTable()
-  await createFridgesUsersTable()
-  await seedFoodCategoriesTable()
-  await createFoodsTable()
-  await createShoppingItemsTable()
+  // await createUsersTable()
+  // await createFridgesTable()
+  // await createFridgesUsersTable()
+  // await seedFoodCategoriesTable()
+  // await createFoodsTable()
+  // await createShoppingItemsTable()
 }
 
 createTables()
