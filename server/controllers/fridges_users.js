@@ -10,6 +10,20 @@ const getUsersByFridgeId = async (req, res) => {
     }
 }
 
+const getFridgesByUserId = async (req, res) => {
+    try {
+        const user_id = parseInt(req.params.user_id)
+        const results = await pool.query(`
+            SELECT * FROM fridges
+            INNER JOIN fridges_users ON fridges.id = fridges_users.fridge_id
+            WHERE fridges_users.user_id = $1
+        `, [user_id])
+        res.status(200).json(results.rows)
+    } catch (error) {
+        res.status(409).json( { error: error.message } )
+    }
+}
+
 const addUserToFridge = async (req, res) => {
     try {
         const { user_id } = req.body
@@ -34,6 +48,7 @@ const deleteUserFromFridge = async (req, res) => {
 
 export default {
     getUsersByFridgeId,
+    getFridgesByUserId,
     addUserToFridge,
     deleteUserFromFridge
 }

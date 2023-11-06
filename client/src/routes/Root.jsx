@@ -25,7 +25,7 @@ const drawerWidth = 240
 
 const Root = (props) => {
   const { window } = props
-  const [fridges, setFridges] = useState([{id: 1, name:"Fridge 1"}, {id: 2, name:"Fridge 2"}]) // TODO: dummy data for UI testing get fridge data from API
+  const [fridges, setFridges] = useState([])
   const [open, setOpen] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
   const user = useSelector(state => state.user.user)
@@ -39,8 +39,15 @@ const Root = (props) => {
   }
 
   useEffect(() => {
-    //TODO: set fridge data
-  }, [])
+    const fetchFridges = async () => {
+      if(user === null || user.id === undefined) return
+      const response = await fetch(`${API_URL}/api/fridges-users/fridges/${user.id}}`)
+      const data = await response.json()
+      setFridges(data)
+    }
+
+    fetchFridges()
+  }, [user])
 
   const drawer = (
     <div>
