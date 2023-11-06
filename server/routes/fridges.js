@@ -5,7 +5,7 @@ const router = express.Router()
 
 router.get('/', FridgesController.getFridges)
 router.get('/:id', FridgesController.getFridge)
-router.post('/:user_id', FridgesController.createFridge)
+router.post('/', FridgesController.createFridge)
 router.patch('/:id', FridgesController.updateFridge)
 router.delete('/:id', FridgesController.deleteFridge)
 

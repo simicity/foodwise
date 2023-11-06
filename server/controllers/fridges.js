@@ -21,10 +21,9 @@ const getFridge = async (req, res) => {
 
 const createFridge = async (req, res) => {
   try {
-    const { name } = req.body
-    const user_id = parseInt(req.params.user_id)
+    const { name, user_id } = req.body
     const results = await pool.query('INSERT INTO fridges (name, user_id) VALUES ($1, $2) RETURNING *', [name, user_id])
-    res.status(201).json(results.rows)
+    res.status(201).json(results.rows[0])
   } catch (error){
     res.status(409).json( { error: error.message } )
   }
