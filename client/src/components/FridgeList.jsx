@@ -43,15 +43,29 @@ const FridgeList = () => {
   const [categories, setCategories] = useState([])
   const dispatch = useDispatch()
 
+  const updateCountInDatabase = async (item) => {
+    const options = {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({count: item.count})
+    }
+
+    await fetch(`${API_URL}/api/foods/${item.id}/count`, options)
+  }
+
   const handleCountUp = useCallback((item) => {
     item.count += 1
     setItems([...items])
+    updateCountInDatabase(item)
   }, [items])
 
   const handleCountDown = useCallback((item) => {
     if(item.count <= 0) return
     item.count -= 1
     setItems([...items])
+    updateCountInDatabase(item)
   }, [items])
 
   const handleAddToShoppingListClick = () => {

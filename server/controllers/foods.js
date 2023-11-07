@@ -3,7 +3,7 @@ import { pool } from "../config/database.js"
 const getFoodsByFridgeId = async (req, res) => {
     try {
         const fridge_id = parseInt(req.params.fridge_id)
-        const results = await pool.query('SELECT * FROM foods WHERE fridge_id = $1', [fridge_id])
+        const results = await pool.query('SELECT * FROM foods WHERE fridge_id = $1 ORDER BY foods.name asc', [fridge_id])
         res.status(200).json(results.rows)
     } catch (error) {
         res.status(409).json( { error: error.message } )
