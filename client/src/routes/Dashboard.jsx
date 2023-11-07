@@ -16,7 +16,6 @@ const Dashboard = () => {
       const response = await fetch(`${API_URL}/api/fridges-users/fridges/${user.id}}`)
       const data = await response.json()
       setFridges(data)
-      console.log(data)
     }
 
     fetchFridges()
