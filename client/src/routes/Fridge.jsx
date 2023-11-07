@@ -20,8 +20,6 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import TextField from '@mui/material/TextField'
-import FridgeFoodItemForm from "../components/FridgeFoodItemForm"
-import ShoppingListFoodItemForm from "../components/ShoppingListFoodItemForm"
 import { API_URL } from "../main"
 
 const Fridge = () => {
@@ -191,12 +189,6 @@ const Fridge = () => {
 
       {/* Fridge and Shopping List */}
       {listType == "fridgeList" ? <FridgeList /> : <ShoppingList />}
-
-      {/* Add Fridge Food Item Form */}
-      {isOpenFridgeFoodItemForm && <FridgeFoodItemForm />}
-
-      {/* Add Shopping List Food Item Form */}
-      {isOpenShoppingListFoodItemForm && <ShoppingListFoodItemForm />}
     </>
   )
 }
