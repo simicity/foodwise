@@ -2,8 +2,8 @@ import { pool } from "../config/database.js"
 
 const getFoodsByFridgeId = async (req, res) => {
     try {
-        const id = parseInt(req.params.id)
-        const results = await pool.query('SELECT * FROM foods WHERE fridge_id = $1', [id])
+        const fridge_id = parseInt(req.params.fridge_id)
+        const results = await pool.query('SELECT * FROM foods WHERE fridge_id = $1 ORDER BY foods.name asc', [fridge_id])
         res.status(200).json(results.rows)
     } catch (error) {
         res.status(409).json( { error: error.message } )
@@ -23,9 +23,8 @@ const getFood = async (req, res) => {
 const createFoodInFridge = async (req, res) => {
     try {
         const { name, expiration_date, count, category_id } = req.body
-        const fridge_id = parseInt(req.params.id)
-        const added_date = new Date()
-        const results = await pool.query('INSERT INTO foods (name, added_date, expiration_date, count, fridge_id, category_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [name, added_date, expiration_date, count, fridge_id, category_id])
+        const fridge_id = parseInt(req.params.fridge_id)
+        const results = await pool.query('INSERT INTO foods (name, expiration_date, count, fridge_id, category_id) VALUES ($1, $2, $3, $4, $5) RETURNING *', [name, expiration_date, count, fridge_id, category_id])
         res.status(201).json(results.rows[0])
     } catch (error) {
         res.status(409).json( { error: error.message } )

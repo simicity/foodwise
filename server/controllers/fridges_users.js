@@ -2,8 +2,11 @@ import { pool } from "../config/database.js"
 
 const getUsersByFridgeId = async (req, res) => {
     try {
-        const id = parseInt(req.params.id)
-        const results = await pool.query('SELECT * FROM fridges_users WHERE fridge_id = $1', [id])
+        const fridge_id = parseInt(req.params.id)
+        const results = await pool.query(`
+            SELECT * FROM users
+            INNER JOIN fridges_users ON users.id = fridges_users.user_id
+            WHERE fridge_id = $1`, [fridge_id])
         res.status(200).json(results.rows)
     } catch (error) {
         res.status(409).json( { error: error.message } )

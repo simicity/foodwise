@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { setCloseFridgeFoodItemForm } from '../slices/openFridgeFoodItemForm'
 import Dialog from '@mui/material/Dialog'
@@ -9,32 +10,95 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
+import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import Stack from '@mui/material/Stack'
 import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
+import { API_URL } from '../main'
 
-const FridgeFoodItemForm = () => {
-  const [item, setItem] = useState({name: "", category: "", addedDate: "", expirationDate: "", count: 0})
-  const [categories, setCategories] = useState(["Fruit", "Vegetable", "Meat", "Dairy", "Grain", "Other"])
+const FridgeFoodItemForm = ({ selectedItem }) => {
+  const fridge_id = useParams().id
+  const [formItem, setFormItem] = useState({ name: "", category_id: "", expiration_date: null, count: ""})
+  const [categories, setCategories] = useState([])
   const isOpenFridgeFoodItemForm = useSelector(state => state.openFridgeFoodItemForm.flag)
   const mode = useSelector(state => state.openFridgeFoodItemForm.editMode)
   const dispatch = useDispatch()
 
   const handleChange = (event) => {
     const { name, value } = event.target
-    setItem({...item, [name]: value})
+    console.log(formItem)
+    setFormItem({...formItem, [name]: value})
   }
 
   const handleDatePickerChange = (date) => {
-    setItem({...item, "expirationDate": date.toDate()})
+    setFormItem((prev) => ({...prev, "expiration_date": date.toDate()}))
   }
 
   const handleSubmit = () => {
+    const addItem = async () => {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formItem)
+      }
+
+      await fetch(`${API_URL}/api/foods/fridge/${fridge_id}`, options)
+    }
+
+    const editItem = async () => {
+      const options = {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formItem)
+      }
+
+      await fetch(`${API_URL}/api/foods/${formItem.id}`, options)
+    }
+
+    if(mode == "add") {
+      addItem()
+      .then(() => {
+        window.location.href = `/fridge/${fridge_id}`
+      })
+    } else {
+      editItem()
+      .then(() => {
+        window.location.href = `/fridge/${fridge_id}`
+      })
+    }
+
     dispatch(setCloseFridgeFoodItemForm())
   }
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const response = await fetch(`${API_URL}/api/food-categories`)
+      const data = await response.json()
+      setCategories(data)
+    }
+
+    fetchCategories()
+  }, [])
+
+
+  useEffect(() => {
+    const updateFormItem = () => {
+      if(mode == "add") {
+        setFormItem({ name: "", category_id: "", expiration_date: null, count: ""})
+      } else {
+        setFormItem({...selectedItem})
+      }
+    }
+
+    updateFormItem()
+  }, [mode, selectedItem])
 
   return (
     <>
@@ -42,31 +106,31 @@ const FridgeFoodItemForm = () => {
         <DialogTitle>{mode == "add" ? "Add" : "Edit"} a food item to Fridge</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
-            <TextField autoFocus margin="dense" label="Name" variant="outlined" sx={{ width: "300px" }} name="name" value={item.name} onChange={handleChange} />
+            <TextField autoFocus margin="dense" label="Name" variant="outlined" sx={{ width: "300px" }} name="name" value={formItem.name} onChange={handleChange} />
             <FormControl fullWidth>
               <InputLabel id="category-select-label">Category</InputLabel>
               <Select
                 labelId="category-select-label"
-                name="category"
-                value={item.category}
+                name="category_id"
+                value={formItem.category_id}
                 label="Category"
                 onChange={handleChange}
                 sx={{ width: "300px" }}
               >
-                {categories.map((category) => (
-                  <MenuItem key={category} value={category}>{category}</MenuItem>
+                {categories && categories.map((category) => (
+                  <MenuItem key={category.name} value={category.id}>{category.name}</MenuItem>
                 ))}
               </Select>
             </FormControl>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                label="Controlled picker"
+                label="Expiration Date"
                 name="expirationDate"
-                value={item.expirationDate}
+                value={dayjs(formItem.expiration_date)}
                 onChange={handleDatePickerChange}
               />
             </LocalizationProvider>
-            <TextField autoFocus margin="dense" label="Quantity" variant="outlined" sx={{ width: "300px" }} value={item.count} onChange={handleChange} />
+            <TextField autoFocus margin="dense" label="Quantity" variant="outlined" sx={{ width: "300px" }} name="count" value={formItem.count} onChange={handleChange} />
           </Stack>
         </DialogContent>
         <DialogActions sx={{ m: 2 }}>

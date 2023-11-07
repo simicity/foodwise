@@ -44,12 +44,14 @@ const createFridgesTable = async () => {
 
 const createFridgesUsersTable = async () => {
   const createFridgesUsersTableQuery = `
+    DROP TABLE IF EXISTS fridges_users CASCADE;
+
     CREATE TABLE IF NOT EXISTS fridges_users (
       fridge_id int NOT NULL,
       user_id int NOT NULL,
       PRIMARY KEY (fridge_id, user_id),
-      FOREIGN KEY (fridge_id) REFERENCES fridges(id) ON UPDATE CASCADE,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE
+      FOREIGN KEY (fridge_id) REFERENCES fridges(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `
 
@@ -99,14 +101,16 @@ const seedFoodCategoriesTable = async () => {
 
 const createFoodsTable = async () => {
   const createFoodsTableQuery = `
+    DROP TABLE IF EXISTS foods CASCADE;
+
     CREATE TABLE IF NOT EXISTS foods (
       id serial PRIMARY KEY,
       name varchar(100) NOT NULL,
-      added_date date NOT NULL,
-      expiration_date date NOT NULL,
+      added_date date DEFAULT CURRENT_DATE,
+      expiration_date date,
       count int NOT NULL,
       fridge_id int NOT NULL,
-      category_id int NOT NULL,
+      category_id int,
       FOREIGN KEY (fridge_id) REFERENCES fridges(id) ON UPDATE CASCADE,
       FOREIGN KEY (category_id) REFERENCES food_categories(id) ON UPDATE CASCADE
     );
