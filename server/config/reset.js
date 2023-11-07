@@ -44,12 +44,14 @@ const createFridgesTable = async () => {
 
 const createFridgesUsersTable = async () => {
   const createFridgesUsersTableQuery = `
+    DROP TABLE IF EXISTS fridges_users CASCADE;
+
     CREATE TABLE IF NOT EXISTS fridges_users (
       fridge_id int NOT NULL,
       user_id int NOT NULL,
       PRIMARY KEY (fridge_id, user_id),
-      FOREIGN KEY (fridge_id) REFERENCES fridges(id) ON UPDATE CASCADE,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE
+      FOREIGN KEY (fridge_id) REFERENCES fridges(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `
 

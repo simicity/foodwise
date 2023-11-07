@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Typography } from "@mui/material"
 import Box from "@mui/material/Box"
 import { useParams } from "react-router-dom"
@@ -22,15 +22,18 @@ import DialogContent from '@mui/material/DialogContent'
 import TextField from '@mui/material/TextField'
 import FridgeFoodItemForm from "../components/FridgeFoodItemForm"
 import ShoppingListFoodItemForm from "../components/ShoppingListFoodItemForm"
+import { API_URL } from "../main"
 
 const Fridge = () => {
   const fridge_id = useParams().id
+  const user = useSelector(state => state.user.user)
   const [anchorEl, setAnchorEl] = useState(null)
   const openMenu = Boolean(anchorEl)
   const [openEdit, setOpenEdit] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
-  const [fridge, setFridge] = useState({id: fridge_id, name: "Fridge 1"}) // TODO: dummy data for UI testing get fridge data from API
-  const [fridgeNameEdit, setFridgeNameEdit] = useState(fridge.name)
+  const [fridge, setFridge] = useState("")
+  const [members, setMembers] = useState([])
+  const [fridgeNameEdit, setFridgeNameEdit] = useState("")
   const listType = useSelector(state => state.listType.listType)
   const isOpenFridgeFoodItemForm = useSelector(state => state.openFridgeFoodItemForm.flag)
   const isOpenShoppingListFoodItemForm = useSelector(state => state.openShoppingListFoodItemForm.flag)
@@ -54,8 +57,22 @@ const Fridge = () => {
   }
 
   const handleSubmitEdit = () => {
-    setOpenEdit(false)
-    handleMenuClose()
+    const editFridge = async () => {
+      const options = {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ...fridge, name: fridgeNameEdit })
+      }
+
+      await fetch(`${API_URL}/api/fridges/${fridge_id}`, options)
+    }
+
+    editFridge()
+    .then(() => {
+      window.location.href = `/fridge/${fridge_id}`
+    })
   }
 
   const handleOpenDelete = () => {
@@ -68,8 +85,18 @@ const Fridge = () => {
   }
 
   const handleSubmitDelete = () => {
-    setOpenDelete(false)
-    handleMenuClose()
+    const deleteFridge = async () => {
+      const options = {
+        method: 'DELETE'
+      }
+
+      await fetch(`${API_URL}/api/fridges/${fridge_id}`, options)
+    }
+
+    deleteFridge()
+    .then(() => {
+      window.location.href = '/'
+    })
   }
 
   const handleFridgeNameChange = (event) => {
@@ -84,6 +111,24 @@ const Fridge = () => {
       dispatch(setShoppingList())
     }
   }
+
+  useEffect(() => {
+    const fetchFridges = async () => {
+      const response = await fetch(`${API_URL}/api/fridges/${fridge_id}}`)
+      const data = await response.json()
+      setFridge(data)
+      setFridgeNameEdit(data.name)
+    }
+
+    const fetchMembers = async () => {
+      const response = await fetch(`${API_URL}/api/fridges-users/users/${fridge_id}}`)
+      const data = await response.json()
+      setMembers(data)
+    }
+
+    fetchFridges()
+    fetchMembers()
+  }, [fridge_id])
 
   return (
     <>
@@ -107,7 +152,7 @@ const Fridge = () => {
           }}
         >
           <MenuItem onClick={handleOpenEdit}>Edit Fridge name</MenuItem>
-          <MenuItem onClick={handleOpenDelete}>Delete Fridge</MenuItem>
+          {user && user.id == fridge.user_id && <MenuItem onClick={handleOpenDelete}>Delete Fridge</MenuItem>}
         </Menu>
 
         <Dialog open={openEdit} onClose={handleCloseEdit}>

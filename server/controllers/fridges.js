@@ -13,7 +13,7 @@ const getFridge = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
     const results = await pool.query('SELECT * FROM fridges WHERE id = $1', [id])
-    res.status(200).json(results.rows)
+    res.status(200).json(results.rows[0])
   } catch (error){
     res.status(409).json( { error: error.message } )
   }
@@ -34,7 +34,7 @@ const updateFridge = async (req, res) => {
     const id = parseInt(req.params.id)
     const { name } = req.body
     const results = await pool.query('UPDATE fridges SET name = $1 WHERE id = $2 RETURNING *', [name, id])
-    res.status(200).json(results.rows)
+    res.status(200).json(results.rows[0])
   } catch (error){
     res.status(409).json( { error: error.message } )
   }
