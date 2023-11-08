@@ -111,7 +111,7 @@ const createFoodsTable = async () => {
       count int NOT NULL,
       fridge_id int NOT NULL,
       category_id int,
-      FOREIGN KEY (fridge_id) REFERENCES fridges(id) ON UPDATE CASCADE,
+      FOREIGN KEY (fridge_id) REFERENCES fridges(id) ON UPDATE CASCADE ON DELETE CASCADE,
       FOREIGN KEY (category_id) REFERENCES food_categories(id) ON UPDATE CASCADE
     );
   `
@@ -148,12 +148,12 @@ const createShoppingItemsTable = async () => {
 }
 
 const createTables = async () => {
-  // await createUsersTable()
-  // await createFridgesTable()
-  // await createFridgesUsersTable()
-  // await seedFoodCategoriesTable()
-  // await createFoodsTable()
-  // await createShoppingItemsTable()
+  await createUsersTable()
+  await createFridgesTable()
+  await createFridgesUsersTable()
+  await seedFoodCategoriesTable()
+  await createFoodsTable()
+  await createShoppingItemsTable()
 }
 
 createTables()
