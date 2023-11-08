@@ -1,4 +1,6 @@
-import { useSelector, useDispatch } from 'react-redux'
+import { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import { setOpenFridgeFoodItemForm, setFridgeFoodItemFormEditMode } from '../slices/openFridgeFoodItemForm'
 import { setOpenShoppingListFoodItemForm, setShoppingListItemFormEditMode } from '../slices/openShoppingListFoodItemForm'
 import { styled } from '@mui/material/styles'
@@ -17,6 +19,7 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline'
 import Tooltip from '@mui/material/Tooltip'
 import FridgeFoodItemForm from './FridgeFoodItemForm'
 import ShoppingListFoodItemForm from "../components/ShoppingListFoodItemForm"
+import { API_URL } from '../main'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -29,38 +32,61 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }))
 
-/* dummy data */
-function createData(name, category, count) {
-  return { name, category, count }
-}
-
-const rows = [
-  createData('Frozen yoghurt', "Dairy", 6),
-  createData('Ice cream sandwich', "Dairy", 9),
-  createData('Eclair', "Sweets", 16),
-  createData('Cupcake', "Sweets", 3),
-  createData('Gingerbread', "Sweets", 1),
-]
-/* dummy data end */
-
 const ShoppingList = () => {
-  const isOpenFridgeFoodItemForm = useSelector(state => state.openFridgeFoodItemForm.flag)
-  const isOpenShoppingListFoodItemForm = useSelector(state => state.openShoppingListFoodItemForm.flag)
+  const fridge_id = useParams().id
+  const [items, setItems] = useState([])
+  const [selectedItem, setSelectedItem] = useState()
+  const [categories, setCategories] = useState([])
   const dispatch = useDispatch()
 
   const handleAddToFridgeClick = () => {
-    dispatch(setFridgeFoodItemFormEditMode("add"))
+    dispatch(setFridgeFoodItemFormEditMode("edit"))
     dispatch(setOpenFridgeFoodItemForm())
   }
 
-  const handleEditClick = () => {
+  const updateItems = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/shopping-items/fridge/${fridge_id}`)
+      const data = await response.json()
+      setItems(data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const handleEditClick = (item) => {
+    setSelectedItem(item)
     dispatch(setShoppingListItemFormEditMode("edit"))
     dispatch(setOpenShoppingListFoodItemForm())
   }
 
-  const handleDeleteClick = () => {
-    
+  const handleDeleteClick = async (item) => {
+    const options = {
+      method: 'DELETE'
+    }
+
+    setItems(items.filter((i) => i.id !== item.id))
+    try {
+      await fetch(`${API_URL}/api/shopping-items/${item.id}`, options)
+    } catch (err) {
+      console.log(err)
+    }
   }
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/food-categories`)
+        const data = await response.json()
+        setCategories(data)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+
+    fetchCategories()
+    updateItems()
+  }, [fridge_id])
 
   return (
     <>
@@ -76,28 +102,28 @@ const ShoppingList = () => {
               </TableRow>
           </TableHead>
           <TableBody>
-            {(rows && rows.length > 0) ? rows.map((row) => (
+            {(items && items.length > 0) ? items.map((item) => (
               <TableRow
-                key={row.name}
+                key={item.name}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell component="th" scope="row">{row.name}</TableCell>
-                <TableCell align="right">{row.category}</TableCell>
-                <TableCell align="right">{row.count}</TableCell>
+                <TableCell component="th" scope="item">{item.name}</TableCell>
+                <TableCell align="center">{(item.category_id !== null && categories.length > 0 ) ? categories.filter((category) => category.id == item.category_id)[0].name : ""}</TableCell>
+                <TableCell align="right">{item.count}</TableCell>
                 <TableCell align="right">
                   <Stack direction="row" display="flex" justifyContent="end">
                     <Tooltip title="Add to Shopping List">
-                      <IconButton onClick={handleAddToFridgeClick}>
+                      <IconButton onClick={() => handleAddToFridgeClick(item)}>
                         <CheckIcon fontSize='small' />
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Edit">
-                      <IconButton onClick={handleEditClick}>
+                      <IconButton onClick={() => handleEditClick(item)}>
                         <EditIcon fontSize='small' />
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Delete">
-                      <IconButton onClick={handleDeleteClick}>
+                      <IconButton onClick={() => handleDeleteClick(item)}>
                         <RemoveCircleOutlineIcon fontSize='small' />
                       </IconButton>
                     </Tooltip>
@@ -114,10 +140,10 @@ const ShoppingList = () => {
       </TableContainer>
 
       {/* Add Fridge Food Item Form */}
-      {isOpenFridgeFoodItemForm && <FridgeFoodItemForm />}
+      <FridgeFoodItemForm selectedItem={selectedItem} />
 
       {/* Add Shopping List Food Item Form */}
-      {isOpenShoppingListFoodItemForm && <ShoppingListFoodItemForm />}
+      <ShoppingListFoodItemForm selectedItem={selectedItem} callback={updateItems} />
     </>
   )
 }

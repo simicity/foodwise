@@ -39,7 +39,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 const FridgeList = () => {
   const fridge_id = useParams().id
   const [items, setItems] = useState([])
-  const [selectedItem, setSelectedItem] = useState({ name: "", category_id: "", expiration_date: null, count: "" })
+  const [selectedItem, setSelectedItem] = useState()
   const [categories, setCategories] = useState([])
   const dispatch = useDispatch()
 
@@ -74,8 +74,9 @@ const FridgeList = () => {
     })
   }, [items])
 
-  const handleAddToShoppingListClick = () => {
-    dispatch(setShoppingListItemFormEditMode("add"))
+  const handleAddToShoppingListClick = (item) => {
+    setSelectedItem(item)
+    dispatch(setShoppingListItemFormEditMode("edit"))
     dispatch(setOpenShoppingListFoodItemForm())
   }
 
@@ -170,7 +171,7 @@ const FridgeList = () => {
                 <TableCell align="right">
                   <Stack direction="row" display="flex" justifyContent="end">
                     <Tooltip title="Add to Shopping List">
-                      <IconButton onClick={handleAddToShoppingListClick}>
+                      <IconButton onClick={() => handleAddToShoppingListClick(item)}>
                         <AddShoppingCartIcon fontSize='small' />
                       </IconButton>
                     </Tooltip>

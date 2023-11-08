@@ -2,7 +2,8 @@ import { pool } from "../config/database.js"
 
 const getShoppingItems = async (req, res) => {
     try {
-        const results = await pool.query('SELECT * FROM shopping_items')
+        const fridge_id = parseInt(req.params.fridge_id)
+        const results = await pool.query('SELECT * FROM shopping_items WHERE fridge_id = $1', [fridge_id])
         res.status(200).json(results.rows)
     } catch (error){
         res.status(409).json( { error: error.message } )
@@ -13,7 +14,7 @@ const getShoppingItem = async (req, res) => {
     try {
         const id = parseInt(req.params.id)
         const results = await pool.query('SELECT * FROM shopping_items WHERE id = $1', [id])
-        res.status(200).json(results.rows)
+        res.status(200).json(results.rows[0])
     } catch (error){
         res.status(409).json( { error: error.message } )
     }
@@ -21,7 +22,8 @@ const getShoppingItem = async (req, res) => {
 
 const createShoppingItem = async (req, res) => {
     try {
-        const { name, count, user_id, category_id, fridge_id } = req.body
+        const fridge_id = parseInt(req.params.fridge_id)
+        const { name, count, user_id, category_id } = req.body
         const results = await pool.query('INSERT INTO shopping_items (name, count, user_id, category_id, fridge_id) VALUES ($1, $2, $3, $4, $5) RETURNING *', [name, count, user_id, category_id, fridge_id])
         res.status(201).json(results.rows[0])
     } catch (error){
@@ -34,7 +36,7 @@ const updateShoppingItem = async (req, res) => {
         const id = parseInt(req.params.id)
         const { name, count, user_id, category_id, fridge_id } = req.body
         const results = await pool.query('UPDATE shopping_items SET name = $1, count = $2, user_id = $3, category_id = $4, fridge_id = $5 WHERE id = $6 RETURNING *', [name, count, user_id, category_id, fridge_id, id])
-        res.status(200).json(results.rows)
+        res.status(200).json(results.rows[0])
     } catch (error){
         res.status(409).json( { error: error.message } )
     }

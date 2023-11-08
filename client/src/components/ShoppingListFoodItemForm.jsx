@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import { setCloseShoppingListFoodItemForm } from '../slices/openShoppingListFoodItemForm'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -12,11 +13,14 @@ import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
+import { API_URL } from '../main'
 
-const ShoppingListFoodItemForm = () => {
-  const [item, setItem] = useState({name: "", category: "", addedDate: "", expirationDate: "", count: ""})
-  const [categories, setCategories] = useState(["Fruit", "Vegetable", "Meat", "Dairy", "Grain", "Other"])
+const ShoppingListFoodItemForm = ({ selectedItem, callback }) => {
+  const fridge_id = useParams().id
+  const [item, setItem] = useState({name: "", category_id: "", count: ""})
+  const [categories, setCategories] = useState([])
   const isOpenShoppingListFoodItemForm = useSelector(state => state.openShoppingListFoodItemForm.flag)
+  const user = useSelector(state => state.user.user)
   const mode = useSelector(state => state.openShoppingListFoodItemForm.editMode)
   const dispatch = useDispatch()
 
@@ -26,8 +30,75 @@ const ShoppingListFoodItemForm = () => {
   }
 
   const handleSubmit = () => {
+    const addItem = async () => {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: item.name, category_id: item.category_id, count: item.count, user_id: user.id})
+      }
+
+      await fetch(`${API_URL}/api/shopping-items/fridge/${fridge_id}`, options)
+    }
+
+    const editItem = async () => {
+      const options = {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({name: item.name, category_id: item.category_id, count: item.count, user_id: user.id, fridge_id: fridge_id})
+      }
+
+      await fetch(`${API_URL}/api/shopping-items/${item.id}`, options)
+    }
+
+    if(mode == "add") {
+      addItem()
+      .then(() => {
+        callback()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    } else {
+      editItem()
+      .then(() => {
+        callback()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+
     dispatch(setCloseShoppingListFoodItemForm())
   }
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const response = await fetch(`${API_URL}/api/food-categories`)
+      const data = await response.json()
+      setCategories(data)
+    }
+
+    fetchCategories()
+    .catch((err) => {
+      console.log(err)
+    })
+  }, [])
+
+  useEffect(() => {
+    const updateFormItem = () => {
+      if(mode == "add") {
+        setItem({name: "", category_id: "", count: ""})
+      } else {
+        setItem({...selectedItem})
+      }
+    }
+
+    updateFormItem()
+  }, [mode, selectedItem])
 
   return (
     <>
@@ -40,14 +111,14 @@ const ShoppingListFoodItemForm = () => {
               <InputLabel id="category-select-label">Category</InputLabel>
               <Select
                 labelId="category-select-label"
-                name="category"
-                value={item.category}
+                name="category_id"
+                value={item.category_id}
                 label="Category"
                 onChange={handleChange}
                 sx={{ width: "300px" }}
               >
                 {categories.map((category) => (
-                  <MenuItem key={category} value={category}>{category}</MenuItem>
+                  <MenuItem key={category.name} value={category.id}>{category.name}</MenuItem>
                 ))}
               </Select>
             </FormControl>

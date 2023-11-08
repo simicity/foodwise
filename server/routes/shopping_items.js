@@ -3,9 +3,9 @@ import ShoppingItemsController from '../controllers/shopping_items.js'
 
 const router = express.Router()
 
-router.get('/', ShoppingItemsController.getShoppingItems)
+router.get('/fridge/:fridge_id', ShoppingItemsController.getShoppingItems)
 router.get('/:id', ShoppingItemsController.getShoppingItem)
-router.post('/', ShoppingItemsController.createShoppingItem)
+router.post('/fridge/:fridge_id', ShoppingItemsController.createShoppingItem)
 router.patch('/:id', ShoppingItemsController.updateShoppingItem)
 router.patch('/:id/name', ShoppingItemsController.updateShoppingItemName)
 router.patch('/:id/count', ShoppingItemsController.updateShoppingItemCount)

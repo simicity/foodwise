@@ -21,7 +21,7 @@ import { API_URL } from '../main'
 
 const FridgeFoodItemForm = ({ selectedItem, callback }) => {
   const fridge_id = useParams().id
-  const [formItem, setFormItem] = useState({ name: "", category_id: "", expiration_date: null, count: ""})
+  const [item, setItem] = useState({ name: "", category_id: "", expiration_date: null, count: ""})
   const [categories, setCategories] = useState([])
   const isOpenFridgeFoodItemForm = useSelector(state => state.openFridgeFoodItemForm.flag)
   const mode = useSelector(state => state.openFridgeFoodItemForm.editMode)
@@ -29,12 +29,11 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
 
   const handleChange = (event) => {
     const { name, value } = event.target
-    console.log(formItem)
-    setFormItem({...formItem, [name]: value})
+    setItem({...item, [name]: value})
   }
 
   const handleDatePickerChange = (date) => {
-    setFormItem((prev) => ({...prev, "expiration_date": date.toDate()}))
+    setItem((prev) => ({...prev, "expiration_date": date.toDate()}))
   }
 
   const handleSubmit = () => {
@@ -44,7 +43,7 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formItem)
+        body: JSON.stringify(item)
       }
 
       await fetch(`${API_URL}/api/foods/fridge/${fridge_id}`, options)
@@ -56,10 +55,10 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formItem)
+        body: JSON.stringify(item)
       }
 
-      await fetch(`${API_URL}/api/foods/${formItem.id}`, options)
+      await fetch(`${API_URL}/api/foods/${item.id}`, options)
     }
 
     if(mode == "add") {
@@ -100,9 +99,9 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
   useEffect(() => {
     const updateFormItem = () => {
       if(mode == "add") {
-        setFormItem({ name: "", category_id: "", expiration_date: null, count: ""})
+        setItem({ name: "", category_id: "", expiration_date: null, count: ""})
       } else {
-        setFormItem({...selectedItem})
+        setItem({...selectedItem})
       }
     }
 
@@ -115,13 +114,13 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
         <DialogTitle>{mode == "add" ? "Add" : "Edit"} a food item to Fridge</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
-            <TextField autoFocus margin="dense" label="Name" variant="outlined" sx={{ width: "300px" }} name="name" value={formItem.name} onChange={handleChange} />
+            <TextField autoFocus margin="dense" label="Name" variant="outlined" sx={{ width: "300px" }} name="name" value={item.name} onChange={handleChange} />
             <FormControl fullWidth>
               <InputLabel id="category-select-label">Category</InputLabel>
               <Select
                 labelId="category-select-label"
                 name="category_id"
-                value={formItem.category_id}
+                value={item.category_id}
                 label="Category"
                 onChange={handleChange}
                 sx={{ width: "300px" }}
@@ -135,11 +134,11 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
               <DatePicker
                 label="Expiration Date"
                 name="expirationDate"
-                value={dayjs(formItem.expiration_date)}
+                value={dayjs(item.expiration_date)}
                 onChange={handleDatePickerChange}
               />
             </LocalizationProvider>
-            <TextField autoFocus margin="dense" label="Quantity" variant="outlined" sx={{ width: "300px" }} name="count" value={formItem.count} onChange={handleChange} />
+            <TextField autoFocus margin="dense" label="Quantity" variant="outlined" sx={{ width: "300px" }} name="count" value={item.count} onChange={handleChange} />
           </Stack>
         </DialogContent>
         <DialogActions sx={{ m: 2 }}>
