@@ -47,6 +47,9 @@ const Root = (props) => {
     }
 
     fetchFridges()
+    .catch((err) => {
+      console.log(err)
+    })
   }, [user])
 
   const drawer = (

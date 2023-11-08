@@ -13,9 +13,14 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchFridges = async () => {
       if(user === null || user.id === undefined) return
-      const response = await fetch(`${API_URL}/api/fridges-users/fridges/${user.id}}`)
-      const data = await response.json()
-      setFridges(data)
+
+      try {
+        const response = await fetch(`${API_URL}/api/fridges-users/fridges/${user.id}}`)
+        const data = await response.json()
+        setFridges(data)
+      } catch (err) {
+        console.log(err)
+      }
     }
 
     fetchFridges()

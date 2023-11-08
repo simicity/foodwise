@@ -71,6 +71,9 @@ const Fridge = () => {
     .then(() => {
       window.location.href = `/fridge/${fridge_id}`
     })
+    .catch((err) => {
+      console.log(err)
+    })
   }
 
   const handleOpenDelete = () => {
@@ -94,6 +97,9 @@ const Fridge = () => {
     deleteFridge()
     .then(() => {
       window.location.href = '/'
+    })
+    .catch((err) => {
+      console.log(err)
     })
   }
 
@@ -125,7 +131,13 @@ const Fridge = () => {
     }
 
     fetchFridges()
+    .catch((err) => {
+      console.log(err)
+    })
     fetchMembers()
+    .catch((err) => {
+      console.log(err)
+    })
   }, [fridge_id])
 
   return (

@@ -67,10 +67,16 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
       .then(() => {
         callback()
       })
+      .catch((err) => {
+        console.log(err)
+      })
     } else {
       editItem()
       .then(() => {
         callback()
+      })
+      .catch((err) => {
+        console.log(err)
       })
     }
 
@@ -85,6 +91,9 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
     }
 
     fetchCategories()
+    .catch((err) => {
+      console.log(err)
+    })
   }, [])
 
 

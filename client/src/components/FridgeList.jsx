@@ -59,6 +59,9 @@ const FridgeList = () => {
     item.count += 1
     setItems([...items])
     updateCountInDatabase(item)
+    .catch((err) => {
+      console.log(err)
+    })
   }, [items])
 
   const handleCountDown = useCallback((item) => {
@@ -66,6 +69,9 @@ const FridgeList = () => {
     item.count -= 1
     setItems([...items])
     updateCountInDatabase(item)
+    .catch((err) => {
+      console.log(err)
+    })
   }, [items])
 
   const handleAddToShoppingListClick = () => {
@@ -79,7 +85,7 @@ const FridgeList = () => {
       const data = await response.json()
       setItems(data)
     } catch (err) {
-      console.error(err.message)
+      console.log(err)
     }
   }
 
@@ -95,14 +101,22 @@ const FridgeList = () => {
     }
 
     setItems(items.filter((i) => i.id !== item.id))
-    await fetch(`${API_URL}/api/foods/${item.id}`, options)
+    try {
+      await fetch(`${API_URL}/api/foods/${item.id}`, options)
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const response = await fetch(`${API_URL}/api/food-categories`)
-      const data = await response.json()
-      setCategories(data)
+      try {
+        const response = await fetch(`${API_URL}/api/food-categories`)
+        const data = await response.json()
+        setCategories(data)
+      } catch (err) {
+        console.log(err)
+      }
     }
 
     fetchCategories()

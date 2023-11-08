@@ -17,10 +17,14 @@ const Header = () => {
 
   const logout = async () => {
     const url = `${API_URL}/auth/logout`
-    const response = await fetch(url, { credentials: 'include' })
-    const json = await response.json()
-    dispatch(setUser(json.user))
-    window.location.href = '/'
+    try {
+      const response = await fetch(url, { credentials: 'include' })
+      const json = await response.json()
+      dispatch(setUser(json.user))
+      window.location.href = '/'
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   const handleOpenUserMenu = (event) => {
@@ -48,9 +52,13 @@ const Header = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      const response = await fetch(`${API_URL}/auth/login/success`, { credentials: 'include' } )
-      const json = await response.json()
-      dispatch(setUser(json.user))
+      try {
+        const response = await fetch(`${API_URL}/auth/login/success`, { credentials: 'include' } )
+        const json = await response.json()
+        dispatch(setUser(json.user))
+      } catch (err) {
+        console.log(err)
+      }
     }
 
     getUser()

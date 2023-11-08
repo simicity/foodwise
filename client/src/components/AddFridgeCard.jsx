@@ -67,6 +67,9 @@ const AddFridgeCard = () => {
       setOpen(false)
       window.location.reload()
     })
+    .catch((err) => {
+      console.log(err)
+    })
   }
 
   return (
