@@ -26,6 +26,8 @@ const createUsersTable = async () => {
 
 const createFridgesTable = async () => {
   const createFridgesTableQuery = `
+    DROP TABLE IF EXISTS fridges CASCADE;
+
     CREATE TABLE IF NOT EXISTS fridges (
       id serial PRIMARY KEY,
       user_id int NOT NULL,
@@ -65,6 +67,8 @@ const createFridgesUsersTable = async () => {
 
 const createFoodCategoriesTable = async () => {
   const createCategoriesTableQuery = `
+      DROP TABLE IF EXISTS food_categories CASCADE;
+
       CREATE TABLE IF NOT EXISTS food_categories (
           id serial PRIMARY KEY,
           name varchar(30) NOT NULL
@@ -126,6 +130,8 @@ const createFoodsTable = async () => {
 
 const createShoppingItemsTable = async () => {
   const createShoppingItemsTableQuery = `
+    DROP TABLE IF EXISTS shopping_items CASCADE;
+    
     CREATE TABLE IF NOT EXISTS shopping_items (
       id serial PRIMARY KEY,
       name varchar(100) NOT NULL,
