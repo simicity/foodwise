@@ -14,7 +14,7 @@ import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
 
 const ShoppingListFoodItemForm = () => {
-  const [item, setItem] = useState({name: "", category: "", addedDate: "", expirationDate: "", count: 0})
+  const [item, setItem] = useState({name: "", category: "", addedDate: "", expirationDate: "", count: ""})
   const [categories, setCategories] = useState(["Fruit", "Vegetable", "Meat", "Dairy", "Grain", "Other"])
   const isOpenShoppingListFoodItemForm = useSelector(state => state.openShoppingListFoodItemForm.flag)
   const mode = useSelector(state => state.openShoppingListFoodItemForm.editMode)
@@ -51,7 +51,7 @@ const ShoppingListFoodItemForm = () => {
                 ))}
               </Select>
             </FormControl>
-            <TextField autoFocus margin="dense" label="Quantity" variant="outlined" sx={{ width: "300px" }} value={item.count} onChange={handleChange} />
+            <TextField autoFocus margin="dense" label="Quantity" variant="outlined" sx={{ width: "300px" }} name="count" value={item.count} onChange={handleChange} />
           </Stack>
         </DialogContent>
         <DialogActions sx={{ m: 2 }}>
