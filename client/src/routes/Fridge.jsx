@@ -20,6 +20,7 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import TextField from '@mui/material/TextField'
+import FridgeMembers from "../components/FridgeMembers.jsx"
 import { API_URL } from "../main"
 import { EditMode } from "../constants"
 
@@ -34,8 +35,6 @@ const Fridge = () => {
   const [members, setMembers] = useState([])
   const [fridgeNameEdit, setFridgeNameEdit] = useState("")
   const listType = useSelector(state => state.listType.listType)
-  const isOpenFridgeFoodItemForm = useSelector(state => state.openFridgeFoodItemForm.flag)
-  const isOpenShoppingListFoodItemForm = useSelector(state => state.openShoppingListFoodItemForm.flag)
   const dispatch = useDispatch()
 
   const handleMenuClick = (event) => {
@@ -144,16 +143,17 @@ const Fridge = () => {
   return (
     <>
       {/* Header */}
-      <Box display="flex" mb={1}>
+      <Box display="flex">
         <Box sx={{ flexDirection: 'column', flexGrow: 1 }}>
           <Typography variant="h4" component="div" fontWeight={"bold"}>{fridge.name}</Typography>
-          <Typography variant="subtitle2" component="div">Creator: {members.find((member) => member?.user_id === fridge?.user_id)?.username}</Typography>
         </Box>
+        <FridgeMembers />
         <IconButton
           aria-controls={openMenu ? 'basic-menu' : undefined}
           aria-haspopup="true"
           aria-expanded={openMenu ? 'true' : undefined}
           onClick={handleMenuClick}
+          sx={{ margin: "auto" }}
           >
           <MoreHorizIcon fontSize="large" />
         </IconButton>
@@ -189,6 +189,12 @@ const Fridge = () => {
         </Dialog>
 
       </Box>
+
+      {/* Sub Header */}
+      <Box display="flex" mb={1}>
+        <Typography variant="subtitle2" component="div"><b>Manager: </b>{members.find((member) => member?.user_id === fridge?.user_id)?.username}</Typography>
+      </Box>
+
       <Box display="flex" position="relative" justifyContent="center" mb={1}>
         <ToggleButtonGroup
           value={listType}
