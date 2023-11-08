@@ -65,7 +65,7 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
     if(mode == "add") {
       addItem()
       .then(() => {
-        window.location.href = `/fridge/${fridge_id}`
+        callback()
       })
     } else {
       editItem()
