@@ -132,7 +132,10 @@ const Fridge = () => {
     <>
       {/* Header */}
       <Box display="flex" mb={1}>
-        <Typography variant="h4" component="div" fontWeight={"bold"} sx={{ flexGrow: 1 }}>{fridge.name}</Typography>
+        <Box sx={{ flexDirection: 'column', flexGrow: 1 }}>
+          <Typography variant="h4" component="div" fontWeight={"bold"}>{fridge.name}</Typography>
+          <Typography variant="subtitle2" component="div">Creator: {members.find((member) => member?.user_id === fridge?.user_id)?.username}</Typography>
+        </Box>
         <IconButton
           aria-controls={openMenu ? 'basic-menu' : undefined}
           aria-haspopup="true"
