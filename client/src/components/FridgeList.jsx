@@ -105,14 +105,8 @@ const FridgeList = () => {
       setCategories(data)
     }
 
-    const fetchItems = async () => {
-      const response = await fetch(`${API_URL}/api/foods/fridge/${fridge_id}`)
-      const data = await response.json()
-      setItems(data)
-    }
-
     fetchCategories()
-    fetchItems()
+    updateItems()
   }, [fridge_id])
 
   return (
