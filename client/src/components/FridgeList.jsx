@@ -73,6 +73,16 @@ const FridgeList = () => {
     dispatch(setOpenShoppingListFoodItemForm())
   }
 
+  const updateItems = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/foods/fridge/${fridge_id}`)
+      const data = await response.json()
+      setItems(data)
+    } catch (err) {
+      console.error(err.message)
+    }
+  }
+
   const handleEditClick = (item) => {
     setSelectedItem(item)
     dispatch(setFridgeFoodItemFormEditMode("edit"))
@@ -179,7 +189,7 @@ const FridgeList = () => {
       </TableContainer>
 
       {/* Add Fridge Food Item Form */}
-      <FridgeFoodItemForm selectedItem={selectedItem} />
+      <FridgeFoodItemForm selectedItem={selectedItem} callback={updateItems} />
 
       {/* Add Shopping List Food Item Form */}
       <ShoppingListFoodItemForm selectedItem={selectedItem} />

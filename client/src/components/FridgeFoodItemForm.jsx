@@ -19,7 +19,7 @@ import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
 import { API_URL } from '../main'
 
-const FridgeFoodItemForm = ({ selectedItem }) => {
+const FridgeFoodItemForm = ({ selectedItem, callback }) => {
   const fridge_id = useParams().id
   const [formItem, setFormItem] = useState({ name: "", category_id: "", expiration_date: null, count: ""})
   const [categories, setCategories] = useState([])
@@ -70,7 +70,7 @@ const FridgeFoodItemForm = ({ selectedItem }) => {
     } else {
       editItem()
       .then(() => {
-        window.location.href = `/fridge/${fridge_id}`
+        callback()
       })
     }
 
