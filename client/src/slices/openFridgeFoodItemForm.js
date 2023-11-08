@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { EditMode } from '../constants.js'
 
 export const initialState = {
   flag: false,
-  editMode: "add"
+  editMode: EditMode.ADD
 };
 
 const openFridgeFoodItemFormSlice = createSlice({

@@ -18,6 +18,7 @@ import Stack from '@mui/material/Stack'
 import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
 import { API_URL } from '../main'
+import { EditMode } from '../constants.js'
 
 const FridgeFoodItemForm = ({ selectedItem, callback }) => {
   const fridge_id = useParams().id
@@ -61,8 +62,8 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
       await fetch(`${API_URL}/api/foods/${item.id}`, options)
     }
 
-    if(mode == "add") {
-      addItem()
+    if(mode == EditMode.EDIT) {
+      editItem()
       .then(() => {
         callback()
       })
@@ -70,7 +71,7 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
         console.log(err)
       })
     } else {
-      editItem()
+      addItem()
       .then(() => {
         callback()
       })
@@ -98,7 +99,7 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
 
   useEffect(() => {
     const updateFormItem = () => {
-      if(mode == "add") {
+      if(mode == EditMode.ADD) {
         setItem({ name: "", category_id: "", expiration_date: null, count: ""})
       } else {
         setItem({...selectedItem})
@@ -111,7 +112,7 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
   return (
     <>
       <Dialog open={isOpenFridgeFoodItemForm} onClose={() => dispatch(setCloseFridgeFoodItemForm())}>
-        <DialogTitle>{mode == "add" ? "Add" : "Edit"} a food item to Fridge</DialogTitle>
+        <DialogTitle>{mode == EditMode.EDIT ? "Edit" : "Add"} a food item to Fridge</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <TextField autoFocus margin="dense" label="Name" variant="outlined" sx={{ width: "300px" }} name="name" value={item.name} onChange={handleChange} />
@@ -143,7 +144,7 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
         </DialogContent>
         <DialogActions sx={{ m: 2 }}>
           <Button onClick={() => dispatch(setCloseFridgeFoodItemForm())}>Cancel</Button>
-          <Button variant='contained' onClick={handleSubmit}>{mode == "add" ? "Add" : "Update"}</Button>
+          <Button variant='contained' onClick={handleSubmit}>{mode == EditMode.EDIT ? "Update" : "Add"}</Button>
         </DialogActions>
       </Dialog>
     </>

@@ -24,6 +24,7 @@ import FridgeFoodItemForm from './FridgeFoodItemForm'
 import ShoppingListFoodItemForm from "../components/ShoppingListFoodItemForm"
 import { API_URL } from '../main'
 import formatDate from '../utils.js'
+import { EditMode } from '../constants'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -39,7 +40,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 const FridgeList = () => {
   const fridge_id = useParams().id
   const [items, setItems] = useState([])
-  const [selectedItem, setSelectedItem] = useState()
+  const [selectedItem, setSelectedItem] = useState({ name: "", category_id: "", expiration_date: null, count: ""})
   const [categories, setCategories] = useState([])
   const dispatch = useDispatch()
 
@@ -76,7 +77,7 @@ const FridgeList = () => {
 
   const handleAddToShoppingListClick = (item) => {
     setSelectedItem(item)
-    dispatch(setShoppingListItemFormEditMode("edit"))
+    dispatch(setShoppingListItemFormEditMode(EditMode.ADD_WITH_DATA))
     dispatch(setOpenShoppingListFoodItemForm())
   }
 
@@ -92,7 +93,7 @@ const FridgeList = () => {
 
   const handleEditClick = (item) => {
     setSelectedItem(item)
-    dispatch(setFridgeFoodItemFormEditMode("edit"))
+    dispatch(setFridgeFoodItemFormEditMode(EditMode.EDIT))
     dispatch(setOpenFridgeFoodItemForm())
   }
 
@@ -201,7 +202,7 @@ const FridgeList = () => {
       <FridgeFoodItemForm selectedItem={selectedItem} callback={updateItems} />
 
       {/* Add Shopping List Food Item Form */}
-      <ShoppingListFoodItemForm selectedItem={selectedItem} />
+      <ShoppingListFoodItemForm selectedItem={selectedItem} callback={() => {}} />
     </>
   )
 }

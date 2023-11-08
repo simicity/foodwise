@@ -20,6 +20,7 @@ import Tooltip from '@mui/material/Tooltip'
 import FridgeFoodItemForm from './FridgeFoodItemForm'
 import ShoppingListFoodItemForm from "../components/ShoppingListFoodItemForm"
 import { API_URL } from '../main'
+import { EditMode } from '../constants'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -35,12 +36,13 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 const ShoppingList = () => {
   const fridge_id = useParams().id
   const [items, setItems] = useState([])
-  const [selectedItem, setSelectedItem] = useState()
+  const [selectedItem, setSelectedItem] = useState({name: "", category_id: "", count: ""})
   const [categories, setCategories] = useState([])
   const dispatch = useDispatch()
 
-  const handleAddToFridgeClick = () => {
-    dispatch(setFridgeFoodItemFormEditMode("edit"))
+  const handleAddToFridgeClick = (item) => {
+    setSelectedItem(item)
+    dispatch(setFridgeFoodItemFormEditMode(EditMode.ADD_WITH_DATA))
     dispatch(setOpenFridgeFoodItemForm())
   }
 
@@ -56,7 +58,7 @@ const ShoppingList = () => {
 
   const handleEditClick = (item) => {
     setSelectedItem(item)
-    dispatch(setShoppingListItemFormEditMode("edit"))
+    dispatch(setShoppingListItemFormEditMode(EditMode.EDIT))
     dispatch(setOpenShoppingListFoodItemForm())
   }
 
@@ -140,7 +142,7 @@ const ShoppingList = () => {
       </TableContainer>
 
       {/* Add Fridge Food Item Form */}
-      <FridgeFoodItemForm selectedItem={selectedItem} />
+      <FridgeFoodItemForm selectedItem={selectedItem} callback={() => {}} />
 
       {/* Add Shopping List Food Item Form */}
       <ShoppingListFoodItemForm selectedItem={selectedItem} callback={updateItems} />

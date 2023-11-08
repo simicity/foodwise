@@ -21,6 +21,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import TextField from '@mui/material/TextField'
 import { API_URL } from "../main"
+import { EditMode } from "../constants"
 
 const Fridge = () => {
   const fridge_id = useParams().id
@@ -199,7 +200,7 @@ const Fridge = () => {
           <ToggleButton value="fridgeList" sx={{ px: 2 }}>Fridge List</ToggleButton>
           <ToggleButton value="shoppingList" sx={{ px: 2 }}>Shopping List</ToggleButton>
         </ToggleButtonGroup>
-        <Button variant="contained" onClick={() => { listType == "fridgeList" ? dispatch(setOpenFridgeFoodItemForm()) && dispatch(setFridgeFoodItemFormEditMode("add")) : dispatch(setOpenShoppingListFoodItemForm()) && dispatch(setShoppingListItemFormEditMode("add"))}} sx={{ position: 'absolute', right: 0, ml: 2 }}>Add Food</Button>
+        <Button variant="contained" onClick={() => { listType == "fridgeList" ? dispatch(setOpenFridgeFoodItemForm()) && dispatch(setFridgeFoodItemFormEditMode(EditMode.ADD)) : dispatch(setOpenShoppingListFoodItemForm()) && dispatch(setShoppingListItemFormEditMode(EditMode.ADD))}} sx={{ position: 'absolute', right: 0, ml: 2 }}>Add Food</Button>
       </Box>
 
       {/* Fridge and Shopping List */}
