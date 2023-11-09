@@ -37,11 +37,7 @@ const Header = () => {
 
   const settings = [
     {
-      name: "Profile",
-      onClick: handleCloseUserMenu
-    },
-    {
-      name: "Settings",
+      name: "Account Settings",
       onClick: handleCloseUserMenu
     },
     {
@@ -62,7 +58,7 @@ const Header = () => {
     }
 
     getUser()
-  }, [])
+  }, [dispatch])
 
   return (
     <>
