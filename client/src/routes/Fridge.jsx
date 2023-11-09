@@ -13,13 +13,6 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import ShoppingList from "../components/ShoppingList"
 import IconButton from '@mui/material/IconButton'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import TextField from '@mui/material/TextField'
 import FridgeMembers from "../components/FridgeMembers.jsx"
 import { API_URL } from "../main"
 import { EditMode } from "../constants"
@@ -27,86 +20,10 @@ import { EditMode } from "../constants"
 const Fridge = () => {
   const fridge_id = useParams().id
   const user = useSelector(state => state.user.user)
-  const [anchorEl, setAnchorEl] = useState(null)
-  const openMenu = Boolean(anchorEl)
-  const [openEdit, setOpenEdit] = useState(false)
-  const [openDelete, setOpenDelete] = useState(false)
   const [fridge, setFridge] = useState("")
   const [members, setMembers] = useState([])
-  const [fridgeNameEdit, setFridgeNameEdit] = useState("")
   const listType = useSelector(state => state.listType.listType)
   const dispatch = useDispatch()
-
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
-
-  const handleOpenEdit = () => {
-    setOpenEdit(true)
-  }
-
-  const handleCloseEdit = () => {
-    setOpenEdit(false)
-    handleMenuClose()
-  }
-
-  const handleSubmitEdit = () => {
-    const editFridge = async () => {
-      const options = {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ...fridge, name: fridgeNameEdit })
-      }
-
-      await fetch(`${API_URL}/api/fridges/${fridge_id}`, options)
-    }
-
-    editFridge()
-    .then(() => {
-      window.location.href = `/fridge/${fridge_id}`
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-  }
-
-  const handleOpenDelete = () => {
-    setOpenDelete(true)
-  }
-
-  const handleCloseDelete = () => {
-    setOpenDelete(false)
-    handleMenuClose()
-  }
-
-  const handleSubmitDelete = () => {
-    const deleteFridge = async () => {
-      const options = {
-        method: 'DELETE'
-      }
-
-      await fetch(`${API_URL}/api/fridges/${fridge_id}`, options)
-    }
-
-    deleteFridge()
-    .then(() => {
-      window.location.href = '/'
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-  }
-
-  const handleFridgeNameChange = (event) => {
-    const { value } = event.target
-    setFridgeNameEdit(value)
-  }
 
   const handleListTypeChange = (event, newListType) => {
     if(newListType == "fridgeList") {
@@ -121,7 +38,6 @@ const Fridge = () => {
       const response = await fetch(`${API_URL}/api/fridges/${fridge_id}}`)
       const data = await response.json()
       setFridge(data)
-      setFridgeNameEdit(data.name)
     }
 
     const fetchMembers = async () => {
@@ -148,46 +64,11 @@ const Fridge = () => {
           <Typography variant="h4" component="div" fontWeight={"bold"}>{fridge.name}</Typography>
         </Box>
         <FridgeMembers />
-        <IconButton
-          aria-controls={openMenu ? 'basic-menu' : undefined}
-          aria-haspopup="true"
-          aria-expanded={openMenu ? 'true' : undefined}
-          onClick={handleMenuClick}
-          sx={{ margin: "auto" }}
-          >
-          <MoreHorizIcon fontSize="large" />
-        </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          open={openMenu}
-          onClose={handleMenuClose}
-          MenuListProps={{
-            'aria-labelledby': 'basic-button',
-          }}
-        >
-          <MenuItem onClick={handleOpenEdit}>Edit Fridge name</MenuItem>
-          {user && user.id == fridge.user_id && <MenuItem onClick={handleOpenDelete}>Delete Fridge</MenuItem>}
-        </Menu>
-
-        <Dialog open={openEdit} onClose={handleCloseEdit}>
-          <DialogTitle>Edit Fridge name</DialogTitle>
-          <DialogContent>
-            <TextField autoFocus margin="dense" label="Fridge Name" variant="outlined" sx={{ width: "300px" }} value={fridgeNameEdit} onChange={handleFridgeNameChange} />
-          </DialogContent>
-          <DialogActions sx={{ m: 2 }}>
-            <Button onClick={handleCloseEdit}>Cancel</Button>
-            <Button variant='contained' onClick={handleSubmitEdit}>Update</Button>
-          </DialogActions>
-        </Dialog>
-
-        <Dialog open={openDelete} onClose={handleCloseDelete}>
-          <DialogTitle>Are you sure you want to delete this fridge?</DialogTitle>
-          <DialogActions sx={{ m: 2 }}>
-            <Button onClick={handleCloseDelete}>Cancel</Button>
-            <Button variant='contained' onClick={handleSubmitDelete} color='error'>Delete</Button>
-          </DialogActions>
-        </Dialog>
-
+        {user && user.id == fridge.user_id && (
+          <IconButton component="a" href={`/fridge/${fridge.id}/settings`} sx={{ margin: "auto" }}>
+            <MoreHorizIcon fontSize="large" />
+          </IconButton>
+        )}
       </Box>
 
       {/* Sub Header */}

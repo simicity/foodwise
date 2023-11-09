@@ -29,10 +29,16 @@ const getFridgesByUserId = async (req, res) => {
 
 const addUserToFridge = async (req, res) => {
     try {
-        const { user_id } = req.body
+        const { username } = req.body
         const fridge_id = parseInt(req.params.id)
-        const results = await pool.query('INSERT INTO fridges_users (fridge_id, user_id) VALUES ($1, $2) RETURNING *', [fridge_id, user_id])
-        res.status(201).json(results.rows[0])
+        const user = await pool.query('SELECT * FROM users WHERE username = $1', [username])
+        if(user.rows.length === 0) {
+            res.status(409).json( { error: error.message } )
+        } else {
+            const user_id = user.rows[0].id
+            const results = await pool.query('INSERT INTO fridges_users (fridge_id, user_id) VALUES ($1, $2) RETURNING *', [fridge_id, user_id])
+            res.status(201).json(results.rows[0])    
+        }
     } catch (error) {
         res.status(409).json( { error: error.message } )
     }
