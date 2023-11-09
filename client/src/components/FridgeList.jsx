@@ -22,9 +22,11 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import Tooltip from '@mui/material/Tooltip'
 import FridgeFoodItemForm from './FridgeFoodItemForm'
 import ShoppingListFoodItemForm from "../components/ShoppingListFoodItemForm"
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh'
 import { API_URL } from '../main'
 import formatDate from '../utils.js'
 import { EditMode } from '../constants'
+import dayjs from 'dayjs'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -110,6 +112,13 @@ const FridgeList = () => {
     }
   }
 
+  const isAboutToExpire = (date) => {
+    const today = dayjs()
+    const expirationDate = dayjs(date)
+    const diff = expirationDate.diff(today, 'day')
+    return diff <= 3
+  }
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -146,7 +155,7 @@ const FridgeList = () => {
                 key={item.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell component="th" scope="row">{item.name}</TableCell>
+                <TableCell component="th" scope="row">{isAboutToExpire(item.expiration_date) && <PriorityHighIcon color="error" fontSize="small" sx={{ mr: 1, my: "auto" }} />}{item.name}</TableCell>
                 <TableCell align="center">{(item.category_id !== null && categories.length > 0 ) ? categories.filter((category) => category.id == item.category_id)[0].name : ""}</TableCell>
                 <TableCell align="center">{formatDate(item.added_date)}</TableCell>
                 <TableCell align="center">{formatDate(item.expiration_date)}</TableCell>
