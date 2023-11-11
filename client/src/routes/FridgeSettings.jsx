@@ -60,7 +60,7 @@ const FridgeSettings = () => {
 
     deleteFridge()
     .then(() => {
-      window.location.href = "/fridge"
+      window.location.href = "/"
     })
   }
 
