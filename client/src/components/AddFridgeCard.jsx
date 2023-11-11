@@ -11,7 +11,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Button from '@mui/material/Button'
 import { API_URL } from "../main"
 
-const AddFridgeCard = () => {
+const AddFridgeCard = ({callback}) => {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const disableButton = name.length >= 3 ? false : true
@@ -48,24 +48,11 @@ const AddFridgeCard = () => {
       return data.id
     }
 
-    const addUserToFridge = async (fridge_id) => {
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ user_id: user.id })
-      }
-
-      fetch(`${API_URL}/api/fridges-users/${fridge_id}`, options)
-    }
-
     createFridge()
-    .then((fridge_id) => addUserToFridge(fridge_id))
     .then(() => {
       setName('')
       setOpen(false)
-      window.location.reload()
+      callback()
     })
     .catch((err) => {
       console.log(err)
