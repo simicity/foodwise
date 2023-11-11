@@ -13,6 +13,16 @@ const getUser = async (req, res) => {
     try {
         const id = parseInt(req.params.id)
         const results = await pool.query('SELECT * FROM users WHERE id = $1', [id])
+        res.status(200).json(results.rows[0])
+    } catch (error){
+        res.status(409).json( { error: error.message } )
+    }
+}
+
+const getUserByEmail = async (req, res) => {
+    try {
+        const email = req.params.email
+        const results = await pool.query('SELECT * FROM users WHERE email = $1', [email])
         res.status(200).json(results.rows)
     } catch (error){
         res.status(409).json( { error: error.message } )
@@ -32,9 +42,9 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        const { username, avatarurl } = req.body
-        const results = await pool.query('UPDATE users SET username = $1, avatarurl = $2 WHERE id = $3 RETURNING *', [username, avatarurl, id])
-        res.status(200).json(results.rows)
+        const { username, email, avatarurl } = req.body
+        const results = await pool.query('UPDATE users SET username = $1, email=$2, avatarurl = $3 WHERE id = $4 RETURNING *', [username, email, avatarurl, id])
+        res.status(200).json(results.rows[0])
     } catch (error){
         res.status(409).json( { error: error.message } )
     }
@@ -53,6 +63,7 @@ const deleteUser = async (req, res) => {
 export default {
     getUsers,
     getUser,
+    getUserByEmail,
     createUser,
     updateUser,
     deleteUser

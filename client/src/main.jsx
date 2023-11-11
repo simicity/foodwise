@@ -12,8 +12,7 @@ import ErrorPage from './routes/ErrorPage.jsx'
 import Dashboard from './routes/Dashboard.jsx'
 import Fridge from './routes/Fridge.jsx'
 import FridgeSettings from './routes/FridgeSettings.jsx'
-
-export const API_URL = 'http://localhost:3001'
+import AccountSettings from './routes/AccountSettings.jsx'
 
 const router = createBrowserRouter([
   {
@@ -33,6 +32,10 @@ const router = createBrowserRouter([
         path: "fridge/:id/settings",
         element: <FridgeSettings />,
       },
+      {
+        path: "account_settings/:id",
+        element: <AccountSettings />,
+      }
     ],
   },
 ]);
