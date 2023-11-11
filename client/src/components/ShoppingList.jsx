@@ -98,8 +98,8 @@ const ShoppingList = () => {
           <TableHead>
             <TableRow>
                 <StyledTableCell>Food Item</StyledTableCell>
-                <StyledTableCell align="right">Category</StyledTableCell>
-                <StyledTableCell align="right">Count</StyledTableCell>
+                <StyledTableCell align="center">Category</StyledTableCell>
+                <StyledTableCell align="center">Count</StyledTableCell>
                 <StyledTableCell align="right" />
               </TableRow>
           </TableHead>
@@ -111,8 +111,8 @@ const ShoppingList = () => {
               >
                 <TableCell component="th" scope="item">{item.name}</TableCell>
                 <TableCell align="center">{(item.category_id !== null && categories.length > 0 ) ? categories.filter((category) => category.id == item.category_id)[0].name : ""}</TableCell>
-                <TableCell align="right">{item.count}</TableCell>
-                <TableCell align="right">
+                <TableCell align="center">{item.count}</TableCell>
+                <TableCell align="center">
                   <Stack direction="row" display="flex" justifyContent="end">
                     <Tooltip title="Add to Shopping List">
                       <IconButton onClick={() => handleAddToFridgeClick(item)}>
