@@ -27,6 +27,12 @@ const createFridge = async (req, res) => {
     const results = await pool.query('INSERT INTO fridges (name, user_id) VALUES ($1, $2) RETURNING *', [name, user_id])
     res.status(201).json(results.rows[0])
     console.log("Fridge created successfully")
+
+    // Add creator to fridge
+    const fridge_id = results.rows[0].id
+    await pool.query('INSERT INTO fridges_users (fridge_id, user_id) VALUES ($1, $2) RETURNING *', [fridge_id, user_id])
+    console.log("Added creator to fridge")
+    
   } catch (error){
     res.status(409).json( { error: error.message } )
     console.log("Failed to create fridge, error: ", error)
