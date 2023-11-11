@@ -103,7 +103,7 @@ const FridgeSettings = () => {
         console.error("User already exists")
         return
       }
-      await fetch(`${API_URL}/api/fridges-users/${fridge_id}`, options)
+      await fetch(`${API_URL}/api/fridges-users/username/${fridge_id}`, options)
     }
 
     addMember()
