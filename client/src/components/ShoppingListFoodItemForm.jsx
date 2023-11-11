@@ -91,16 +91,21 @@ const ShoppingListFoodItemForm = ({ selectedItem, callback }) => {
 
   useEffect(() => {
     const updateFormItem = () => {
-      if(mode == EditMode.ADD) {
+            if(mode == EditMode.ADD) {
         setItem({name: "", category_id: "", count: ""})
       } else {
         setItem({...selectedItem})
-        console.log(selectedItem)
       }
     }
 
     updateFormItem()
   }, [mode, selectedItem])
+
+  useEffect(() => {
+    if(mode == EditMode.ADD) {
+      setItem({name: "", category_id: "", count: ""})
+    }
+  }, [isOpenShoppingListFoodItemForm])
 
   return (
     <>

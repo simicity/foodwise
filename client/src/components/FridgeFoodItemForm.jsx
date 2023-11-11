@@ -98,6 +98,12 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
 
 
   useEffect(() => {
+    if(mode == EditMode.ADD) {
+      setItem({ name: "", category_id: "", expiration_date: null, count: ""})
+    }
+  }, [isOpenFridgeFoodItemForm])
+
+  useEffect(() => {
     const updateFormItem = () => {
       if(mode == EditMode.ADD) {
         setItem({ name: "", category_id: "", expiration_date: null, count: ""})
