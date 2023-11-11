@@ -16,6 +16,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import FridgeMembers from "../components/FridgeMembers.jsx"
 import { API_URL } from "../main"
 import { EditMode } from "../constants"
+import { ListMode } from  "../constants"
 
 const Fridge = () => {
   const fridge_id = useParams().id
@@ -26,10 +27,20 @@ const Fridge = () => {
   const dispatch = useDispatch()
 
   const handleListTypeChange = (event, newListType) => {
-    if(newListType == "fridgeList") {
+    if(newListType == ListMode.FRIDGE) {
       dispatch(setFridgeList())
     } else {
       dispatch(setShoppingList())
+    }
+  }
+
+  const handleAddButtonClick = () => {
+    if(listType == ListMode.FRIDGE) {
+      dispatch(setOpenFridgeFoodItemForm())
+      dispatch(setFridgeFoodItemFormEditMode(EditMode.ADD))
+    } else {
+      dispatch(setOpenShoppingListFoodItemForm())
+      dispatch(setShoppingListItemFormEditMode(EditMode.ADD))
     }
   }
 
@@ -84,14 +95,14 @@ const Fridge = () => {
           aria-label="ListType"
           size="small"
         >
-          <ToggleButton value="fridgeList" sx={{ px: 2 }}>Fridge List</ToggleButton>
-          <ToggleButton value="shoppingList" sx={{ px: 2 }}>Shopping List</ToggleButton>
+          <ToggleButton value={ListMode.FRIDGE} sx={{ px: 2 }}>Fridge List</ToggleButton>
+          <ToggleButton value={ListMode.SHOPPING_LIST} sx={{ px: 2 }}>Shopping List</ToggleButton>
         </ToggleButtonGroup>
-        <Button variant="contained" onClick={() => { listType == "fridgeList" ? dispatch(setOpenFridgeFoodItemForm()) && dispatch(setFridgeFoodItemFormEditMode(EditMode.ADD)) : dispatch(setOpenShoppingListFoodItemForm()) && dispatch(setShoppingListItemFormEditMode(EditMode.ADD))}} sx={{ position: 'absolute', right: 0, ml: 2 }}>Add Food</Button>
+        <Button variant="contained" onClick={handleAddButtonClick} sx={{ position: 'absolute', right: 0, ml: 2 }}>Add Food</Button>
       </Box>
 
       {/* Fridge and Shopping List */}
-      {listType == "fridgeList" ? <FridgeList /> : <ShoppingList />}
+      {listType == ListMode.FRIDGE ? <FridgeList /> : <ShoppingList />}
     </>
   )
 }

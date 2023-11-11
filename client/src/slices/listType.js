@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { ListMode } from '../constants.js'
 
 export const initialState = {
-  listType: "fridgeList",
+  listType: ListMode.FRIDGE,
 };
 
 const listTypeSlice = createSlice({
@@ -9,10 +10,10 @@ const listTypeSlice = createSlice({
   initialState,
   reducers: {
     setFridgeList: state => {
-      state.listType = "fridgeList"
+      state.listType = ListMode.FRIDGE
     },
     setShoppingList: state => {
-      state.listType = "shoppingList"
+      state.listType = ListMode.SHOPPING_LIST
     },
   },
 })
