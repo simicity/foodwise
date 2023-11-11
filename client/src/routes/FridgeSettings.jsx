@@ -18,7 +18,7 @@ const FridgeSettings = () => {
   const user = useSelector(state => state.user.user)
   const [members, setMembers] = useState([])
   const [manager, setManager] = useState({ username: "", avatarurl: "" })
-  const [userToInvite, setUserToInvite] = useState("")
+  const [emailToInvite, setEmailToInvite] = useState("")
 
   const handleFridgeNameChange = (event) => {
     const { value } = event.target
@@ -41,9 +41,6 @@ const FridgeSettings = () => {
     }
 
     editFridgeName()
-    .then(() => {
-      setFridge((prev) => ({...prev, "name": fridgeName}))
-    })
   }
 
   const handleDeleteFridge = () => {
@@ -86,27 +83,43 @@ const FridgeSettings = () => {
 
   const handleInviteEmailChange = (event) => {
     const { value } = event.target
-    setUserToInvite(value)
+    setEmailToInvite(value)
   }
 
-  const handleInviteSubmit = () => {
+  const handleInviteSubmit = async () => {
+    const fetchUsers = async () => {
+      const response = await fetch(`${API_URL}/api/users/email/${emailToInvite}`)
+      const data = await response.json()
+      return data
+    }
+
     const addMember = async () => {
       const options = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({username: userToInvite})
+        body: JSON.stringify({email: emailToInvite})
       }
 
-      if(members.filter((member) => member.email === userToInvite).length > 0) {
+      if(members.filter((member) => member.email === emailToInvite).length > 0) {
         console.error("User already exists")
         return
       }
-      await fetch(`${API_URL}/api/fridges-users/username/${fridge_id}`, options)
+      await fetch(`${API_URL}/api/fridges-users/fridge/${fridge_id}`, options)
+    }
+
+    const usersByEmail = await fetchUsers()
+    console.log(usersByEmail)
+    if(usersByEmail.length !== 1) {
+      console.log("User does not exist or multiple users with the same email")
+      return
     }
 
     addMember()
+    .then(() => {
+      setMembers((prev) => [...prev, usersByEmail[0]])
+    })
   }
 
   useEffect(() => {
@@ -187,7 +200,7 @@ const FridgeSettings = () => {
           <Typography variant="h6" component="div" fontWeight={"bold"} mb={1}>No member</Typography>
         )}
         <Stack direction="row" mt={2}>
-          <TextField variant="outlined" value={userToInvite} placeholder="Input email address of the user to invite" size="small" onChange={handleInviteEmailChange} sx={{ flexGrow: 1 }} />
+          <TextField variant="outlined" value={emailToInvite} placeholder="Input email address of the user to invite" size="small" onChange={handleInviteEmailChange} sx={{ flexGrow: 1 }} />
           <Button variant="contained" onClick={handleInviteSubmit} sx={{ ml: 2 }}>Invite</Button>
         </Stack>
       </Box>
