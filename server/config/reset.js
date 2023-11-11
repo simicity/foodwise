@@ -11,6 +11,7 @@ const createUsersTable = async () => {
           id serial PRIMARY KEY,
           google_id varchar(30) NOT NULL,
           username varchar(100) NOT NULL,
+          email varchar(100),
           avatarurl varchar(500) NOT NULL,
           accesstoken varchar(500) NOT NULL
       );

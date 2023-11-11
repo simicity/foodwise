@@ -38,7 +38,10 @@ const Header = () => {
   const settings = [
     {
       name: "Account Settings",
-      onClick: handleCloseUserMenu
+      onClick: () => {
+        window.location.href = `/account_settings/${user.id}`
+        handleCloseUserMenu()
+      }
     },
     {
       name: "Logout",
