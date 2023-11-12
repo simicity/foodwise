@@ -72,9 +72,24 @@ const FridgeFoodItemForm = ({ selectedItem, callback }) => {
       })
     } else {
       addItem()
-      .then(() => {
-        callback()
+      .then(async () => {
+        if(mode == EditMode.ADD_WITH_DATA) {
+          const deleteItem = async () => {
+            const options = {
+              method: 'DELETE'
+            }
+
+            try {
+              await fetch(`${API_URL}/api/shopping-items/${selectedItem.id}`, options)
+            } catch (err) {
+              console.log(err)
+            }
+          }
+
+          await deleteItem()
+        }
       })
+      .then(callback)
       .catch((err) => {
         console.log(err)
       })

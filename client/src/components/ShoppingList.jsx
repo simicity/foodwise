@@ -51,7 +51,7 @@ const ShoppingList = () => {
       const response = await fetch(`${API_URL}/api/shopping-items/fridge/${fridge_id}`)
       const data = await response.json()
       setItems(data)
-    } catch (err) {
+          } catch (err) {
       console.log(err)
     }
   }
@@ -106,7 +106,7 @@ const ShoppingList = () => {
           <TableBody>
             {(items && items.length > 0) ? items.map((item) => (
               <TableRow
-                key={item.name}
+                key={item.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="item">{item.name}</TableCell>
@@ -142,7 +142,7 @@ const ShoppingList = () => {
       </TableContainer>
 
       {/* Add Fridge Food Item Form */}
-      <FridgeFoodItemForm selectedItem={selectedItem} callback={() => {}} />
+      <FridgeFoodItemForm selectedItem={selectedItem} callback={updateItems} />
 
       {/* Add Shopping List Food Item Form */}
       <ShoppingListFoodItemForm selectedItem={selectedItem} callback={updateItems} />
