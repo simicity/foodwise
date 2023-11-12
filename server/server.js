@@ -8,6 +8,8 @@ import { GoogleOauth20 } from './config/auth.js'
 import authRouter from './routes/auth.js'
 import apiRouter from './routes/index.js'
 
+const CLIENT_URL = process.env.NODE_ENV === 'production' ? 'https://foodwise-client.up.railway.app' : 'http://localhost:5173'
+
 const app = express()
 
 app.use(session({
@@ -18,7 +20,7 @@ app.use(session({
 
 app.use(express.json())
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: CLIENT_URL,
   methods: 'GET,POST,PUT,DELETE,PATCH',
   credentials: true
 }))
@@ -36,7 +38,7 @@ passport.deserializeUser((user, done) => {
 })
 
 app.get('/', (req, res) => {
-  res.redirect('http://localhost:5173')
+  res.redirect(CLIENT_URL)
 })
 
 app.use('/auth', authRouter)

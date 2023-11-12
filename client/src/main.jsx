@@ -14,6 +14,8 @@ import Fridge from './routes/Fridge.jsx'
 import FridgeSettings from './routes/FridgeSettings.jsx'
 import AccountSettings from './routes/AccountSettings.jsx'
 
+export const API_URL = process.env.NODE_ENV === 'production' ? 'https://foodwise-server.up.railway.app' : 'http://localhost:3001'
+
 const router = createBrowserRouter([
   {
     path: "/",
