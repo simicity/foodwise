@@ -4,7 +4,7 @@ import GoogleStrategy from 'passport-google-oauth20'
 const options = {
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: 'http://localhost:3001/auth/google/callback'
+  callbackURL: process.env.NODE_ENV === 'production' ? 'https://foodwise-server.up.railway.app/auth/google/callback' : 'http://localhost:3001/auth/google/callback'
 }
 
 const verify = async (accessToken, refreshToken, profile, callback) => {
