@@ -20,6 +20,27 @@ const getFood = async (req, res) => {
     }
 }
 
+const getFoodsByFridgeIdSorted = async (req, res) => {
+    try {
+        const fridge_id = parseInt(req.params.fridge_id)
+        const { sort } = req.query
+        const { order } = req.query
+        if (!order || order === 'asc') {
+            const results = await pool.query(`
+                SELECT * FROM foods WHERE fridge_id = $1 ORDER BY ${sort} asc
+            `, [fridge_id])
+            res.status(200).json(results.rows)
+        } else if (order === 'desc') {
+            const results = await pool.query(`
+                SELECT * FROM foods WHERE fridge_id = $1 ORDER BY ${sort} desc
+            `, [fridge_id])
+            res.status(200).json(results.rows)
+        }
+    } catch (error) {
+        res.status(409).json( { error: error.message } )
+    }
+}
+
 const createFoodInFridge = async (req, res) => {
     try {
         const { name, expiration_date, count, category_id } = req.body
@@ -88,6 +109,7 @@ const deleteFood = async (req, res) => {
 export default {
     getFoodsByFridgeId,
     getFood,
+    getFoodsByFridgeIdSorted,
     createFoodInFridge,
     updateFood,
     updateFoodCount,
