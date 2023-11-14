@@ -3,8 +3,53 @@ import { pool } from "../config/database.js"
 const getFoodsByFridgeId = async (req, res) => {
     try {
         const fridge_id = parseInt(req.params.fridge_id)
-        const results = await pool.query('SELECT * FROM foods WHERE fridge_id = $1 ORDER BY foods.name asc', [fridge_id])
-        res.status(200).json(results.rows)
+        const { sort } = req.query
+        const { order } = req.query
+        const page = parseInt(req.query.page)
+        const limit = parseInt(req.query.limit)
+        // console.log("sort", sort)
+        // console.log("order", order)
+        // console.log("page", page)
+        // console.log("limit", limit)
+        if (page && limit && (!sort)) {
+            const results = await pool.query(`
+                SELECT * FROM foods 
+                WHERE fridge_id = $1 LIMIT $2 OFFSET $3
+            `, [fridge_id, limit, (page - 1) * limit])
+            res.status(200).json(results.rows)
+        }
+        else if (page && limit && sort && (!order)) {
+            const results = await pool.query(`
+                SELECT * FROM foods 
+                WHERE fridge_id = $1 ORDER BY ${sort} LIMIT $2 OFFSET $3
+            `, [fridge_id, limit, (page - 1) * limit])
+            res.status(200).json(results.rows)
+        }
+        else if (page && limit && sort && order) {
+            const results = await pool.query(`
+                SELECT * FROM foods 
+                WHERE fridge_id = $1 ORDER BY ${sort} ${order} LIMIT $2 OFFSET $3
+            `, [fridge_id, limit, (page - 1) * limit])
+            res.status(200).json(results.rows)
+        }
+        else if ((!page) && (!limit) && (!sort)) {
+            const results = await pool.query(`SELECT * FROM foods WHERE fridge_id = $1`, [fridge_id])
+            res.status(200).json(results.rows)
+        }
+        else if ((!page) && (!limit) && sort && (!order)) {
+            const results = await pool.query(`
+                SELECT * FROM foods 
+                WHERE fridge_id = $1 ORDER BY ${sort}
+            `, [fridge_id])
+            res.status(200).json(results.rows)
+        }
+        else if ((!page) && (!limit) && sort && order) {
+            const results = await pool.query(`
+                SELECT * FROM foods 
+                WHERE fridge_id = $1 ORDER BY ${sort} ${order}
+            `, [fridge_id])
+            res.status(200).json(results.rows)
+        }
     } catch (error) {
         res.status(409).json( { error: error.message } )
     }
@@ -15,27 +60,6 @@ const getFood = async (req, res) => {
         const id = parseInt(req.params.id)
         const results = await pool.query('SELECT * FROM foods WHERE id = $1', [id])
         res.status(200).json(results.rows)
-    } catch (error) {
-        res.status(409).json( { error: error.message } )
-    }
-}
-
-const getFoodsByFridgeIdSorted = async (req, res) => {
-    try {
-        const fridge_id = parseInt(req.params.fridge_id)
-        const { sort } = req.query
-        const { order } = req.query
-        if (!order || order === 'asc') {
-            const results = await pool.query(`
-                SELECT * FROM foods WHERE fridge_id = $1 ORDER BY ${sort} asc
-            `, [fridge_id])
-            res.status(200).json(results.rows)
-        } else if (order === 'desc') {
-            const results = await pool.query(`
-                SELECT * FROM foods WHERE fridge_id = $1 ORDER BY ${sort} desc
-            `, [fridge_id])
-            res.status(200).json(results.rows)
-        }
     } catch (error) {
         res.status(409).json( { error: error.message } )
     }
@@ -109,7 +133,6 @@ const deleteFood = async (req, res) => {
 export default {
     getFoodsByFridgeId,
     getFood,
-    getFoodsByFridgeIdSorted,
     createFoodInFridge,
     updateFood,
     updateFoodCount,
