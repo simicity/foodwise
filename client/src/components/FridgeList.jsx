@@ -166,6 +166,11 @@ const FridgeList = () => {
                     active={orderBy === 'added_date'}
                     direction={orderBy === 'added_date' ? order : 'asc'}
                     onClick={() => sortHandler('added_date')}
+                    sx={{
+                      '& .MuiTableSortLabel-icon': {
+                        color: (theme) => theme.palette.common.white + " !important",
+                      },
+                    }}
                   >
                     <Box
                       sx={{
@@ -191,6 +196,11 @@ const FridgeList = () => {
                     active={orderBy === 'expiration_date'}
                     direction={orderBy === 'expiration_date' ? order : 'asc'}
                     onClick={() => sortHandler('expiration_date')}
+                    sx={{
+                      '& .MuiTableSortLabel-icon': {
+                        color: (theme) => theme.palette.common.white + " !important",
+                      },
+                    }}
                   >
                     <Box
                       sx={{
