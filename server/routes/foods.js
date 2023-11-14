@@ -5,7 +5,6 @@ const router = express.Router()
 
 router.get('/:id', FoodsController.getFood)
 router.get('/fridge/:fridge_id', FoodsController.getFoodsByFridgeId)
-router.get('/fridge/:fridge_id/sorted', FoodsController.getFoodsByFridgeIdSorted)
 router.post('/fridge/:fridge_id', FoodsController.createFoodInFridge)
 router.patch('/:id', FoodsController.updateFood)
 router.patch('/:id/count', FoodsController.updateFoodCount)
