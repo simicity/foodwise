@@ -32,6 +32,10 @@ const getFoodsByFridgeId = async (req, res) => {
             `, [fridge_id, limit, (page - 1) * limit])
             res.status(200).json(results.rows)
         }
+        else if ((!page) && (!limit) && (!sort)) {
+            const results = await pool.query(`SELECT * FROM foods WHERE fridge_id = $1`, [fridge_id])
+            res.status(200).json(results.rows)
+        }
         else if ((!page) && (!limit) && sort && (!order)) {
             const results = await pool.query(`
                 SELECT * FROM foods 
