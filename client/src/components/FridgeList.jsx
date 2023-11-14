@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setOpenFridgeFoodItemForm, setFridgeFoodItemFormEditMode } from '../slices/openFridgeFoodItemForm'
@@ -24,6 +24,7 @@ import Tooltip from '@mui/material/Tooltip'
 import FridgeFoodItemForm from './FridgeFoodItemForm'
 import ShoppingListFoodItemForm from "../components/ShoppingListFoodItemForm"
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh'
+import Pagination from '@mui/material/Pagination'
 import { visuallyHidden } from '@mui/utils'
 import { API_URL } from '../main'
 import formatDate from '../utils.js'
@@ -48,7 +49,11 @@ const FridgeList = () => {
   const [categories, setCategories] = useState([])
   const [order, setOrder] = useState('asc')
   const [orderBy, setOrderBy] = useState('added_date')
+  const [page, setPage] = useState(1)
+  const [pageCount, setPageCount] = useState(1)
   const dispatch = useDispatch()
+
+  const rowsPerPage = useRef(10)
 
   const updateCountInDatabase = async (item) => {
     const options = {
@@ -89,7 +94,7 @@ const FridgeList = () => {
 
   const updateItems = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/foods/fridge/${fridge_id}?sort=${orderBy}&order=${order}`)
+      const response = await fetch(`${API_URL}/api/foods/fridge/${fridge_id}?sort=${orderBy}&order=${order}&page=${page}&limit=${rowsPerPage.current}`)
       const data = await response.json()
       setItems(data)
     } catch (err) {
@@ -130,6 +135,10 @@ const FridgeList = () => {
     setOrderBy(property)
   }
 
+  const handlePageChange = (event, value) => {
+    setPage(value)
+  }
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -147,7 +156,20 @@ const FridgeList = () => {
 
   useEffect(() => {
     updateItems()
-  }, [orderBy, order])
+  }, [orderBy, order, page])
+
+  useEffect(() => {
+    const getItemsCount = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/foods/fridge/${fridge_id}`)
+        const data = await response.json()
+        setPageCount(Math.ceil(data.length / rowsPerPage.current))
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    getItemsCount()
+  }, [])
 
   return (
     <>
@@ -278,6 +300,9 @@ const FridgeList = () => {
             )}
           </TableBody>
         </Table>
+        <Stack direction="row" justifyContent="center" alignItems="center" sx={{ p: 2 }}>
+          <Pagination count={pageCount} page={page} onChange={handlePageChange} />
+        </Stack>
       </TableContainer>
 
       {/* Add Fridge Food Item Form */}
