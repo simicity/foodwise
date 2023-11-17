@@ -55,6 +55,15 @@ const updateFridge = async (req, res) => {
 const deleteFridge = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
+    const user = req.user
+    if (user?.id) {
+      const creator = await pool.query('SELECT user_id FROM fridges WHERE id = $1', [id])
+      if (creator.rows[0].user_id !== user.id) {
+        res.status(401).json( { error: "Unauthorized" } )
+        console.log("Unauthorized to delete fridge")
+        return
+      }
+    }
     const results = await pool.query('DELETE FROM fridges WHERE id = $1', [id])
     res.status(200).json(results.rows)
     console.log("Fridge deleted successfully")

@@ -49,7 +49,8 @@ const FridgeSettings = () => {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'
       }
 
       await fetch(`${API_URL}/api/fridges/${fridge_id}`, options)
