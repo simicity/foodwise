@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setOpenFridgeFoodItemForm, setFridgeFoodItemFormEditMode } from '../slices/openFridgeFoodItemForm'
@@ -10,6 +10,7 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
+import TableSortLabel from '@mui/material/TableSortLabel'
 import Paper from '@mui/material/Paper'
 import IconButton from '@mui/material/IconButton'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
@@ -23,6 +24,8 @@ import Tooltip from '@mui/material/Tooltip'
 import FridgeFoodItemForm from './FridgeFoodItemForm'
 import ShoppingListFoodItemForm from "../components/ShoppingListFoodItemForm"
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh'
+import Pagination from '@mui/material/Pagination'
+import { visuallyHidden } from '@mui/utils'
 import { API_URL } from '../main'
 import formatDate from '../utils.js'
 import { EditMode } from '../constants'
@@ -44,7 +47,13 @@ const FridgeList = () => {
   const [items, setItems] = useState([])
   const [selectedItem, setSelectedItem] = useState({ name: "", category_id: "", expiration_date: null, count: ""})
   const [categories, setCategories] = useState([])
+  const [order, setOrder] = useState('asc')
+  const [orderBy, setOrderBy] = useState('added_date')
+  const [page, setPage] = useState(1)
+  const [pageCount, setPageCount] = useState(1)
   const dispatch = useDispatch()
+
+  const rowsPerPage = useRef(10)
 
   const updateCountInDatabase = async (item) => {
     const options = {
@@ -85,7 +94,7 @@ const FridgeList = () => {
 
   const updateItems = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/foods/fridge/${fridge_id}`)
+      const response = await fetch(`${API_URL}/api/foods/fridge/${fridge_id}?sort=${orderBy}&order=${order}&page=${page}&limit=${rowsPerPage.current}`)
       const data = await response.json()
       setItems(data)
     } catch (err) {
@@ -119,6 +128,17 @@ const FridgeList = () => {
     return diff <= 3
   }
 
+  const sortHandler = (property) => {
+    console.log(property)
+    const isAsc = orderBy === property && order === 'asc'
+    setOrder(isAsc ? 'desc' : 'asc')
+    setOrderBy(property)
+  }
+
+  const handlePageChange = (event, value) => {
+    setPage(value)
+  }
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -134,6 +154,23 @@ const FridgeList = () => {
     updateItems()
   }, [fridge_id])
 
+  useEffect(() => {
+    updateItems()
+  }, [orderBy, order, page])
+
+  useEffect(() => {
+    const getItemsCount = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/foods/fridge/${fridge_id}`)
+        const data = await response.json()
+        setPageCount(Math.ceil(data.length / rowsPerPage.current))
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    getItemsCount()
+  }, [])
+
   return (
     <>
       {/* Fridge List */}
@@ -143,8 +180,66 @@ const FridgeList = () => {
             <TableRow>
                 <StyledTableCell>Food Item</StyledTableCell>
                 <StyledTableCell align="center">Category</StyledTableCell>
-                <StyledTableCell align="center">Added Date</StyledTableCell>
-                <StyledTableCell align="center">Expiration Date</StyledTableCell>
+                <StyledTableCell
+                  sortDirection={orderBy === 'added_date' ? order : false} 
+                  align="center"
+                >
+                  <TableSortLabel
+                    active={orderBy === 'added_date'}
+                    direction={orderBy === 'added_date' ? order : 'asc'}
+                    onClick={() => sortHandler('added_date')}
+                    sx={{
+                      '& .MuiTableSortLabel-icon': {
+                        color: (theme) => theme.palette.common.white + " !important",
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        backgroundColor: (theme) => theme.palette.common.black,
+                        color: (theme) => theme.palette.common.white,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Added Date
+                      {orderBy === 'added_date' ? (
+                        <Box component="span" sx={visuallyHidden}>
+                          {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                        </Box>
+                      ) : null}
+                    </Box>
+                  </TableSortLabel>
+                </StyledTableCell>
+                <StyledTableCell
+                  sortDirection={orderBy === 'expiration_date' ? order : false}
+                  align="center"
+                >
+                  <TableSortLabel
+                    active={orderBy === 'expiration_date'}
+                    direction={orderBy === 'expiration_date' ? order : 'asc'}
+                    onClick={() => sortHandler('expiration_date')}
+                    sx={{
+                      '& .MuiTableSortLabel-icon': {
+                        color: (theme) => theme.palette.common.white + " !important",
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        backgroundColor: (theme) => theme.palette.common.black,
+                        color: (theme) => theme.palette.common.white,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Expiration Date
+                      {orderBy === 'expiration_date' ? (
+                        <Box component="span" sx={visuallyHidden}>
+                          {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                        </Box>
+                      ) : null}
+                    </Box>
+                  </TableSortLabel>
+                </StyledTableCell>
                 <StyledTableCell align="center">Count</StyledTableCell>
                 <StyledTableCell align="right" />
               </TableRow>
@@ -205,6 +300,9 @@ const FridgeList = () => {
             )}
           </TableBody>
         </Table>
+        <Stack direction="row" justifyContent="center" alignItems="center" sx={{ p: 2 }}>
+          <Pagination count={pageCount} page={page} onChange={handlePageChange} />
+        </Stack>
       </TableContainer>
 
       {/* Add Fridge Food Item Form */}
