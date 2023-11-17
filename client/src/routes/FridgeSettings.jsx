@@ -10,6 +10,10 @@ import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import Avatar from '@mui/material/Avatar'
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 
 const FridgeSettings = () => {
   const fridge_id = useParams().id
@@ -19,6 +23,7 @@ const FridgeSettings = () => {
   const [members, setMembers] = useState([])
   const [manager, setManager] = useState({ username: "", avatarurl: "" })
   const [emailToInvite, setEmailToInvite] = useState("")
+  const [open, setOpen] = useState(false);
 
   const handleFridgeNameChange = (event) => {
     const { value } = event.target
@@ -53,13 +58,19 @@ const FridgeSettings = () => {
         credentials: 'include'
       }
 
-      await fetch(`${API_URL}/api/fridges/${fridge_id}`, options)
+      try {
+        const res = await fetch(`${API_URL}/api/fridges/${fridge_id}`, options)
+        if (res.status === 200) {
+          window.location.href = "/"
+        } else {
+          throw new Error(res.error)
+        }
+      } catch (err) {
+        setOpen(true);
+      }
     }
 
     deleteFridge()
-    .then(() => {
-      window.location.href = "/"
-    })
   }
 
   const handleRemoveMember = (member) => {
@@ -89,9 +100,14 @@ const FridgeSettings = () => {
 
   const handleInviteSubmit = async () => {
     const fetchUsers = async () => {
-      const response = await fetch(`${API_URL}/api/users/email/${emailToInvite}`)
-      const data = await response.json()
-      return data
+      try {
+        const response = await fetch(`${API_URL}/api/users/email/${emailToInvite}`)
+        const data = await response.json()
+        return data
+      }
+      catch (err) {
+        console.log(err)
+      }
     }
 
     const addMember = async () => {
@@ -122,6 +138,10 @@ const FridgeSettings = () => {
       setMembers((prev) => [...prev, usersByEmail[0]])
     })
   }
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     const fetchFridge = async () => {
@@ -210,6 +230,24 @@ const FridgeSettings = () => {
         <Typography variant="h6" component="div" fontWeight={"bold"} mb={1}>Delete Fridge</Typography>
         <Button variant="contained" onClick={handleDeleteFridge} color="error" size="large">Delete</Button>
       </Box>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            You are not allowed to delete this fridge.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} autoFocus>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
