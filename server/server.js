@@ -15,7 +15,11 @@ const app = express()
 app.use(session({
   secret: 'foodwise',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  }
 }))
 
 app.use(express.json())
