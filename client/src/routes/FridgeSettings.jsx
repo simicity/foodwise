@@ -24,6 +24,7 @@ const FridgeSettings = () => {
   const [manager, setManager] = useState({ username: "", avatarurl: "" })
   const [emailToInvite, setEmailToInvite] = useState("")
   const [open, setOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("")
 
   const handleFridgeNameChange = (event) => {
     const { value } = event.target
@@ -63,10 +64,13 @@ const FridgeSettings = () => {
         if (res.status === 200) {
           window.location.href = "/"
         } else {
-          throw new Error(res.error)
+          setAlertMessage("Not allowed to delete fridge")
+          setOpen(true);
+          const data = await res.json()
+          console.error(data.error)
         }
       } catch (err) {
-        setOpen(true);
+        console.log(err)
       }
     }
 
@@ -80,14 +84,28 @@ const FridgeSettings = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({user_id: member.user_id})
+        body: JSON.stringify({user_id: member.user_id}),
+        credentials: 'include'
       }
 
       if(member.user_id === manager.user_id) {
         console.error("Cannot remove manager")
-      } 
-      await fetch(`${API_URL}/api/fridges-users/${fridge_id}`, options)
-      setMembers((prev) => prev.filter((prevMember) => prevMember.user_id !== member.user_id))
+        return
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/api/fridges-users/${fridge_id}`, options)
+        if (res.status === 200) {
+          setMembers((prev) => prev.filter((prevMember) => prevMember.user_id !== member.user_id))
+        } else {
+          setAlertMessage("Not allowed to remove member")
+          setOpen(true);
+          const data = await res.json()
+          console.error(data.error)
+        }
+      } catch (err) {
+        console.log(err)
+      }
     }
 
     removeMember()
@@ -116,27 +134,39 @@ const FridgeSettings = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({email: emailToInvite})
+        body: JSON.stringify({email: emailToInvite}),
+        credentials: 'include'
       }
 
       if(members.filter((member) => member.email === emailToInvite).length > 0) {
         console.error("User already exists")
         return
       }
-      await fetch(`${API_URL}/api/fridges-users/fridge/${fridge_id}`, options)
+      try {
+        const res = await fetch(`${API_URL}/api/fridges-users/fridge/${fridge_id}`, options)
+        if (res.status === 200) {
+          setMembers((prev) => [...prev, usersByEmail[0]])
+        }
+        else {
+          setAlertMessage("Not allowed to invite member")
+          setOpen(true);
+          const data = await res.json()
+          console.error(data.error)
+        }
+      } catch (err) {
+        console.log(err)
+      }
     }
 
     const usersByEmail = await fetchUsers()
-    console.log(usersByEmail)
     if(usersByEmail.length !== 1) {
+      setAlertMessage("User does not exist")
+      setOpen(true);
       console.log("User does not exist or multiple users with the same email")
       return
     }
 
     addMember()
-    .then(() => {
-      setMembers((prev) => [...prev, usersByEmail[0]])
-    })
   }
 
   const handleClose = () => {
@@ -239,7 +269,7 @@ const FridgeSettings = () => {
       >
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            You are not allowed to delete this fridge.
+            {alertMessage}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
