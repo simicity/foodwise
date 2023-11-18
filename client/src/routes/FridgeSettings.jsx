@@ -205,7 +205,7 @@ const FridgeSettings = () => {
 
   useEffect(() => {
     const getManager = async () => {
-      const managerData = members.filter((member) => member.id === fridge.id)[0]
+      const managerData = members.filter((member) => member.id === fridge.user_id)[0]
       if(managerData) setManager({...managerData})
     }
 
