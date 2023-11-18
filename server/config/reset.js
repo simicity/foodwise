@@ -140,9 +140,9 @@ const createShoppingItemsTable = async () => {
       user_id int NOT NULL,
       category_id int NOT NULL,
       fridge_id int NOT NULL,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE,
-      FOREIGN KEY (category_id) REFERENCES food_categories(id) ON UPDATE CASCADE,
-      FOREIGN KEY (fridge_id) REFERENCES fridges(id) ON UPDATE CASCADE
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (category_id) REFERENCES food_categories(id) ON UPDATE CASCADE ON DELETE CASCADE,
+      FOREIGN KEY (fridge_id) REFERENCES fridges(id) ON DELETE CASCADE
     );
   `
 
