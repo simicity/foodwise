@@ -140,6 +140,7 @@ const FridgeSettings = () => {
 
       if(members.filter((member) => member.email === emailToInvite).length > 0) {
         console.error("User already exists")
+        setEmailToInvite("")
         return
       }
       try {
@@ -153,6 +154,7 @@ const FridgeSettings = () => {
           const data = await res.json()
           console.error(data.error)
         }
+        setEmailToInvite("")
       } catch (err) {
         console.log(err)
       }
