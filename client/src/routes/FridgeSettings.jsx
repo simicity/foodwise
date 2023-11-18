@@ -84,11 +84,11 @@ const FridgeSettings = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({user_id: member.user_id}),
+        body: JSON.stringify({user_id: member.id}),
         credentials: 'include'
       }
 
-      if(member.user_id === manager.user_id) {
+      if(member.id === manager.id) {
         console.error("Cannot remove manager")
         return
       }
@@ -96,7 +96,7 @@ const FridgeSettings = () => {
       try {
         const res = await fetch(`${API_URL}/api/fridges-users/${fridge_id}`, options)
         if (res.status === 200) {
-          setMembers((prev) => prev.filter((prevMember) => prevMember.user_id !== member.user_id))
+          setMembers((prev) => prev.filter((prevMember) => prevMember.id !== member.id))
         } else {
           setAlertMessage("Not allowed to remove member")
           setOpen(true);
@@ -129,6 +129,15 @@ const FridgeSettings = () => {
     }
 
     const addMember = async () => {
+      const usersByEmail = await fetchUsers()
+      if(usersByEmail.length !== 1) {
+        setAlertMessage("User does not exist")
+        setOpen(true);
+        setEmailToInvite("")
+        console.log("User does not exist or multiple users with the same email")
+        return
+      }
+
       const options = {
         method: 'POST',
         headers: {
@@ -158,14 +167,6 @@ const FridgeSettings = () => {
       } catch (err) {
         console.log(err)
       }
-    }
-
-    const usersByEmail = await fetchUsers()
-    if(usersByEmail.length !== 1) {
-      setAlertMessage("User does not exist")
-      setOpen(true);
-      console.log("User does not exist or multiple users with the same email")
-      return
     }
 
     addMember()
@@ -204,7 +205,7 @@ const FridgeSettings = () => {
 
   useEffect(() => {
     const getManager = async () => {
-      const managerData = members.filter((member) => member.user_id === fridge.user_id)[0]
+      const managerData = members.filter((member) => member.id === fridge.id)[0]
       if(managerData) setManager({...managerData})
     }
 
@@ -245,7 +246,7 @@ const FridgeSettings = () => {
               <Avatar alt={member.username} src={member.avatarurl} sx={{ width: 30, height: 30, mr: 1 }} />
               <Typography variant="body1" component="span" key={member.id} sx={{ my: "auto", ml: 1 }}>{member.username}</Typography>
             </Stack>
-            {(member.user_id !== manager.user_id) && (
+            {(member.id !== manager.id) && (
               <Button variant="outlined" onClick={() => handleRemoveMember(member)} color="warning" sx={{ ml: 2 }}>Remove</Button>
             )}
           </Stack>
