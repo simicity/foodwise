@@ -144,7 +144,7 @@ const FridgeSettings = () => {
       }
       try {
         const res = await fetch(`${API_URL}/api/fridges-users/fridge/${fridge_id}`, options)
-        if (res.status === 200) {
+        if (res.status === 201) {
           setMembers((prev) => [...prev, usersByEmail[0]])
         }
         else {
